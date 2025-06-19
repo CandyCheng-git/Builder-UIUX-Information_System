@@ -2,13 +2,584 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/placeholder.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello world project</title>
+    <title>Garden Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "dashboard-text-primary": "rgb(17, 24, 39)",
+              "dashboard-text-secondary": "rgb(71, 85, 105)",
+              "dashboard-text-muted": "rgb(148, 163, 184)",
+              "dashboard-border-light": "rgb(229, 231, 235)",
+              "dashboard-status-green": "rgb(22, 163, 74)",
+              "dashboard-status-amber": "rgb(245, 158, 11)",
+              "dashboard-status-red": "rgb(239, 68, 68)",
+              "dashboard-overlay": "rgba(241, 245, 249, 0.5)",
+              "primary-teal": "rgb(0, 128, 128)",
+            },
+            fontSize: {
+              "heading-large": [
+                "30px",
+                { lineHeight: "36px", fontWeight: "700" },
+              ],
+              "heading-medium": [
+                "24px",
+                { lineHeight: "32px", fontWeight: "700" },
+              ],
+              "heading-small": [
+                "18px",
+                { lineHeight: "28px", fontWeight: "700" },
+              ],
+              "body-large": ["18px", { lineHeight: "28px" }],
+              "body-small": ["14px", { lineHeight: "20px" }],
+              "body-tiny": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+            },
+            spacing: {
+              "section-bottom": "48px",
+              "heading-bottom": "32px",
+              "card-spacing": "24px",
+              "element-spacing": "16px",
+              "small-spacing": "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom scrollbar styling */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(241, 245, 249, 0.5);
+        border-radius: 3px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.5);
+        border-radius: 3px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.8);
+      }
+    </style>
   </head>
+  <body class="bg-white font-sans">
+    <!-- Notification Area (Fixed positioning, bottom-right) -->
+    <div
+      id="notification-area"
+      class="fixed bottom-4 right-4 max-w-[420px] z-50 pointer-events-none"
+    >
+      <!-- Notifications will be inserted here via JavaScript -->
+    </div>
 
-  <body>
-    <div id="root"></div>
+    <div class="min-h-screen bg-white">
+      <!-- Header -->
+      <header
+        class="bg-white/80 backdrop-blur-md border-b border-dashboard-border-light h-16 fixed top-0 left-0 right-0 z-40"
+      >
+        <div class="flex items-center justify-between h-full px-6">
+          <!-- Mobile Menu Button -->
+          <button
+            id="mobile-menu-btn"
+            class="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <svg
+              class="w-6 h-6 text-dashboard-text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
+            </svg>
+          </button>
 
-    <script type="module" src="/src/main.tsx"></script>
+          <!-- Search Bar -->
+          <div class="flex-1 max-w-md mx-4">
+            <div class="relative">
+              <svg
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-dashboard-text-muted"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                ></path>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search plants, controllers..."
+                class="w-full pl-10 pr-4 py-2 bg-dashboard-overlay border border-dashboard-border-light rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all"
+              />
+            </div>
+          </div>
+
+          <!-- User Actions -->
+          <div class="flex items-center gap-2">
+            <!-- Notification Button -->
+            <button
+              id="notification-btn"
+              class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg
+                class="w-6 h-6 text-dashboard-text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-3.5-3.5c-.828-.828-2.172-.828-3 0L9 18h5zm0 0v1a3 3 0 01-6 0v-1m6 0H9"
+                ></path>
+              </svg>
+              <span
+                class="absolute top-1 right-1 w-2 h-2 bg-dashboard-status-red rounded-full"
+              ></span>
+            </button>
+
+            <!-- User Profile Button -->
+            <button
+              id="user-profile-btn"
+              class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <div
+                class="w-8 h-8 bg-gradient-to-br from-primary-teal to-blue-500 rounded-full flex items-center justify-center"
+              >
+                <span class="text-white text-sm font-medium">JD</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main
+        class="pt-16 min-h-screen bg-white custom-scrollbar overflow-y-auto"
+      >
+        <div class="p-6">
+          <!-- Page Header -->
+          <div class="mb-heading-bottom">
+            <h1 class="text-heading-large text-dashboard-text-primary mb-2">
+              Dashboard
+            </h1>
+            <p class="text-body-large text-dashboard-text-secondary">
+              My Garden View
+            </p>
+          </div>
+
+          <!-- My Favourite Plant Section -->
+          <section class="mb-section-bottom">
+            <div class="flex items-center gap-3 mb-6">
+              <span class="text-2xl">🌱</span>
+              <h2 class="text-heading-medium text-dashboard-text-primary">
+                My Favourite Plant
+              </h2>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
+            >
+              <!-- Herb Bed Card -->
+              <div
+                class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <span class="text-3xl">🌱</span>
+                  <span
+                    class="bg-dashboard-status-green/10 text-dashboard-status-green text-body-tiny px-3 py-1 rounded-full font-medium"
+                    >All Good</span
+                  >
+                </div>
+                <h3 class="text-heading-small text-dashboard-text-primary mb-2">
+                  Herb Bed
+                </h3>
+                <div class="space-y-1">
+                  <p class="text-body-small text-dashboard-text-secondary">
+                    Garden Controller A
+                  </p>
+                  <p class="text-body-small text-dashboard-text-muted">
+                    Herb Garden
+                  </p>
+                </div>
+              </div>
+
+              <!-- Tomato Card -->
+              <div
+                class="bg-gradient-to-br from-orange-50 to-amber-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <span class="text-3xl">🌱</span>
+                  <span
+                    class="bg-dashboard-status-amber/10 text-dashboard-status-amber text-body-tiny px-3 py-1 rounded-full font-medium"
+                    >Check Bed</span
+                  >
+                </div>
+                <h3 class="text-heading-small text-dashboard-text-primary mb-2">
+                  Tomato
+                </h3>
+                <div class="space-y-1">
+                  <p class="text-body-small text-dashboard-text-secondary">
+                    Greenhouse Controller
+                  </p>
+                  <p class="text-body-small text-dashboard-text-muted">
+                    Vegetable Garden
+                  </p>
+                </div>
+              </div>
+
+              <!-- Lettuce Patch Card -->
+              <div
+                class="bg-gradient-to-br from-red-50 to-pink-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <span class="text-3xl">🌱</span>
+                  <span
+                    class="bg-dashboard-status-red/10 text-dashboard-status-red text-body-tiny px-3 py-1 rounded-full font-medium"
+                    >Urgent Issue</span
+                  >
+                </div>
+                <h3 class="text-heading-small text-dashboard-text-primary mb-2">
+                  Lettuce Patch
+                </h3>
+                <div class="space-y-1">
+                  <p class="text-body-small text-dashboard-text-secondary">
+                    Main Garden Controller
+                  </p>
+                  <p class="text-body-small text-dashboard-text-muted">
+                    Flower Beds
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- My Favourite Controller Section -->
+          <section class="mb-section-bottom">
+            <div class="flex items-center gap-3 mb-6">
+              <span class="text-2xl">⚙️</span>
+              <h2 class="text-heading-medium text-dashboard-text-primary">
+                My Favourite Controller
+              </h2>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
+            >
+              <!-- Garden Controller A Card -->
+              <div
+                class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <span class="text-3xl">🎮</span>
+                  <div class="flex items-center gap-1">
+                    <div
+                      class="w-2 h-2 bg-dashboard-status-green rounded-full"
+                    ></div>
+                    <span class="text-body-tiny text-dashboard-text-muted"
+                      >WiFi</span
+                    >
+                  </div>
+                </div>
+                <h3 class="text-heading-small text-dashboard-text-primary mb-3">
+                  Garden Controller A
+                </h3>
+                <div class="space-y-2">
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Address:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >Not set</span
+                    >
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Location:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >(x: y)</span
+                    >
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Favourite Beds:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >1</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Greenhouse Controller Card -->
+              <div
+                class="bg-gradient-to-br from-purple-50 to-violet-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <span class="text-3xl">🎮</span>
+                  <div class="flex items-center gap-1">
+                    <div
+                      class="w-2 h-2 bg-dashboard-status-green rounded-full"
+                    ></div>
+                    <span class="text-body-tiny text-dashboard-text-muted"
+                      >WiFi</span
+                    >
+                  </div>
+                </div>
+                <h3 class="text-heading-small text-dashboard-text-primary mb-3">
+                  Greenhouse Controller
+                </h3>
+                <div class="space-y-2">
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Address:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >Not set</span
+                    >
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Location:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >(x: y)</span
+                    >
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Favourite Beds:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >3</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hydroponic System Card -->
+              <div
+                class="bg-gradient-to-br from-slate-50 to-gray-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <span class="text-3xl">🎮</span>
+                  <div class="flex items-center gap-1">
+                    <div
+                      class="w-2 h-2 bg-dashboard-status-red rounded-full"
+                    ></div>
+                    <span class="text-body-tiny text-dashboard-text-muted"
+                      >WiFi</span
+                    >
+                  </div>
+                </div>
+                <h3 class="text-heading-small text-dashboard-text-primary mb-3">
+                  Hydroponic System
+                </h3>
+                <div class="space-y-2">
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Address:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >Not set</span
+                    >
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Location:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >(x: y)</span
+                    >
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-body-small text-dashboard-text-muted"
+                      >Favourite Beds:</span
+                    >
+                    <span class="text-body-small text-dashboard-text-secondary"
+                      >2</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Dashboard JavaScript Interactions
+      class DashboardApp {
+        constructor() {
+          this.init();
+        }
+
+        init() {
+          this.setupEventListeners();
+          this.setupCardHovers();
+          this.setupNotifications();
+        }
+
+        setupEventListeners() {
+          // Mobile menu toggle
+          const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+          mobileMenuBtn?.addEventListener("click", () => {
+            this.toggleMobileMenu();
+          });
+
+          // Notification button
+          const notificationBtn = document.getElementById("notification-btn");
+          notificationBtn?.addEventListener("click", () => {
+            this.showNotification(
+              "You have 3 new alerts from your garden controllers",
+              "info",
+            );
+          });
+
+          // User profile button
+          const userProfileBtn = document.getElementById("user-profile-btn");
+          userProfileBtn?.addEventListener("click", () => {
+            this.showUserMenu();
+          });
+
+          // Search functionality
+          const searchInput = document.querySelector(
+            'input[placeholder*="Search"]',
+          );
+          searchInput?.addEventListener("input", (e) => {
+            this.handleSearch(e.target.value);
+          });
+        }
+
+        setupCardHovers() {
+          const cards = document.querySelectorAll(".card-hover");
+          cards.forEach((card) => {
+            card.addEventListener("mouseenter", () => {
+              card.style.transform = "translateY(-2px)";
+            });
+
+            card.addEventListener("mouseleave", () => {
+              card.style.transform = "translateY(0)";
+            });
+
+            card.addEventListener("click", () => {
+              const title = card.querySelector("h3")?.textContent || "Item";
+              this.showNotification(`Clicked on ${title}`, "success");
+            });
+          });
+        }
+
+        setupNotifications() {
+          // Show welcome notification after page load
+          setTimeout(() => {
+            this.showNotification(
+              "Welcome to your Garden Dashboard! 🌱",
+              "success",
+            );
+          }, 1000);
+        }
+
+        toggleMobileMenu() {
+          console.log("Mobile menu toggled");
+          this.showNotification(
+            "Mobile menu functionality would go here",
+            "info",
+          );
+        }
+
+        showUserMenu() {
+          console.log("User menu opened");
+          this.showNotification(
+            "User profile options would appear here",
+            "info",
+          );
+        }
+
+        handleSearch(query) {
+          if (query.length > 2) {
+            console.log("Searching for:", query);
+            this.showNotification(`Searching for "${query}"...`, "info");
+          }
+        }
+
+        showNotification(message, type = "info") {
+          const notificationArea = document.getElementById("notification-area");
+          if (!notificationArea) return;
+
+          const notification = document.createElement("div");
+          const typeColors = {
+            success: "bg-dashboard-status-green text-white",
+            error: "bg-dashboard-status-red text-white",
+            warning: "bg-dashboard-status-amber text-white",
+            info: "bg-white border border-dashboard-border-light text-dashboard-text-primary shadow-lg",
+          };
+
+          notification.className = `
+            ${typeColors[type]}
+            p-4 rounded-lg mb-2 transform translate-x-full opacity-0
+            transition-all duration-300 ease-in-out pointer-events-auto
+            max-w-sm
+          `;
+
+          notification.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium">${message}</span>
+              <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-current opacity-70 hover:opacity-100">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          `;
+
+          notificationArea.appendChild(notification);
+
+          // Animate in
+          setTimeout(() => {
+            notification.classList.remove("translate-x-full", "opacity-0");
+          }, 100);
+
+          // Auto remove after 5 seconds
+          setTimeout(() => {
+            notification.classList.add("translate-x-full", "opacity-0");
+            setTimeout(() => {
+              notification.remove();
+            }, 300);
+          }, 5000);
+        }
+      }
+
+      // Initialize the dashboard when DOM is ready
+      document.addEventListener("DOMContentLoaded", () => {
+        new DashboardApp();
+      });
+
+      // Add some global interactions
+      document.addEventListener("keydown", (e) => {
+        // Quick search with Ctrl/Cmd + K
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+          e.preventDefault();
+          const searchInput = document.querySelector(
+            'input[placeholder*="Search"]',
+          );
+          searchInput?.focus();
+        }
+      });
+    </script>
   </body>
 </html>
