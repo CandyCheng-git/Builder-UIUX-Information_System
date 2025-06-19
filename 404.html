@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirecting...</title>
+  <script>
+    (function () {
+      var repoBase = '/Builder-UIUX-Information_System';
+      var path = window.location.pathname;
+      if (!path.startsWith(repoBase)) {
+        window.location.replace(repoBase + path);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
