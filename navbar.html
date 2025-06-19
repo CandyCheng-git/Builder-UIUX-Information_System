@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garden Dashboard - Navigation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "dashboard-text-primary": "rgb(17, 24, 39)",
+              "dashboard-text-secondary": "rgb(71, 85, 105)",
+              "dashboard-text-muted": "rgb(148, 163, 184)",
+              "dashboard-border-light": "rgb(229, 231, 235)",
+              "dashboard-status-green": "rgb(22, 163, 74)",
+              "dashboard-status-amber": "rgb(245, 158, 11)",
+              "dashboard-status-red": "rgb(239, 68, 68)",
+              "dashboard-overlay": "rgba(241, 245, 249, 0.5)",
+              "primary-teal": "rgb(0, 128, 128)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Ensure smooth transitions for dropdowns */
+      .dropdown-enter {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+      }
+      .dropdown-enter-active {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        transition: all 0.2s ease-out;
+      }
+      .dropdown-exit {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      .dropdown-exit-active {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+        transition: all 0.15s ease-in;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav
+      class="bg-white/80 backdrop-blur-md border-b border-dashboard-border-light h-16 fixed top-0 left-0 right-0 z-50"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div class="flex items-center justify-between h-full">
+          <!-- Left Section: Logo + Desktop Menu -->
+          <div class="flex items-center gap-8">
+            <!-- Brand/Logo -->
+            <div class="flex items-center gap-3">
+              <div
+                class="w-8 h-8 bg-gradient-to-br from-primary-teal to-green-600 rounded-lg flex items-center justify-center"
+              >
+                <span class="text-white text-lg font-bold">🌱</span>
+              </div>
+              <span
+                class="text-xl font-bold text-dashboard-text-primary hidden sm:block"
+                >GardenHub</span
+              >
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden lg:flex items-center space-x-8">
+              <a
+                href="#"
+                class="text-primary-teal font-medium text-sm hover:text-primary-teal/80 transition-colors relative"
+              >
+                Dashboard
+                <div
+                  class="absolute bottom-[-17px] left-0 right-0 h-0.5 bg-primary-teal"
+                ></div>
+              </a>
+              <a
+                href="#"
+                class="text-dashboard-text-secondary font-medium text-sm hover:text-dashboard-text-primary transition-colors"
+                >Plants</a
+              >
+              <a
+                href="#"
+                class="text-dashboard-text-secondary font-medium text-sm hover:text-dashboard-text-primary transition-colors"
+                >Controllers</a
+              >
+              <a
+                href="#"
+                class="text-dashboard-text-secondary font-medium text-sm hover:text-dashboard-text-primary transition-colors"
+                >Reports</a
+              >
+              <a
+                href="#"
+                class="text-dashboard-text-secondary font-medium text-sm hover:text-dashboard-text-primary transition-colors"
+                >Settings</a
+              >
+            </div>
+          </div>
+
+          <!-- Center Section: Search Bar -->
+          <div class="flex-1 max-w-md mx-4">
+            <div class="relative">
+              <svg
+                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-dashboard-text-muted"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                ></path>
+              </svg>
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Search plants, controllers..."
+                class="w-full pl-10 pr-4 py-2 bg-dashboard-overlay border border-dashboard-border-light rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all placeholder-dashboard-text-muted"
+              />
+            </div>
+          </div>
+
+          <!-- Right Section: Actions -->
+          <div class="flex items-center gap-2">
+            <!-- Mobile Menu Button -->
+            <button
+              id="mobile-menu-btn"
+              class="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg
+                id="menu-icon"
+                class="w-6 h-6 text-dashboard-text-primary block"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                ></path>
+              </svg>
+              <svg
+                id="close-icon"
+                class="w-6 h-6 text-dashboard-text-primary hidden"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+
+            <!-- Notification Button -->
+            <button
+              id="notification-btn"
+              class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <svg
+                class="w-6 h-6 text-dashboard-text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-3.5-3.5c-.828-.828-2.172-.828-3 0L9 18h5zm0 0v1a3 3 0 01-6 0v-1m6 0H9"
+                ></path>
+              </svg>
+              <!-- Notification Badge -->
+              <span
+                class="absolute top-1 right-1 w-2 h-2 bg-dashboard-status-red rounded-full"
+              ></span>
+            </button>
+
+            <!-- User Profile Button with Dropdown -->
+            <div class="relative">
+              <button
+                id="user-profile-btn"
+                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <div
+                  class="w-8 h-8 bg-gradient-to-br from-primary-teal to-blue-500 rounded-full flex items-center justify-center"
+                >
+                  <span class="text-white text-sm font-medium">JD</span>
+                </div>
+              </button>
+
+              <!-- User Dropdown Menu -->
+              <div
+                id="user-dropdown"
+                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-dashboard-border-light hidden z-50"
+              >
+                <div class="py-2">
+                  <div class="px-4 py-2 border-b border-dashboard-border-light">
+                    <p class="text-sm font-medium text-dashboard-text-primary">
+                      John Doe
+                    </p>
+                    <p class="text-xs text-dashboard-text-muted">
+                      john@gardenhub.com
+                    </p>
+                  </div>
+                  <a
+                    href="#"
+                    class="block px-4 py-2 text-sm text-dashboard-text-secondary hover:bg-gray-50 transition-colors"
+                    >Profile Settings</a
+                  >
+                  <a
+                    href="#"
+                    class="block px-4 py-2 text-sm text-dashboard-text-secondary hover:bg-gray-50 transition-colors"
+                    >Garden Preferences</a
+                  >
+                  <a
+                    href="#"
+                    class="block px-4 py-2 text-sm text-dashboard-text-secondary hover:bg-gray-50 transition-colors"
+                    >Notifications</a
+                  >
+                  <div class="border-t border-dashboard-border-light mt-2">
+                    <a
+                      href="#"
+                      class="block px-4 py-2 text-sm text-dashboard-status-red hover:bg-gray-50 transition-colors"
+                      >Sign Out</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="lg:hidden bg-white border-t border-dashboard-border-light shadow-lg hidden"
+      >
+        <div class="px-4 py-3 space-y-3">
+          <a href="#" class="block text-primary-teal font-medium text-base py-2"
+            >Dashboard</a
+          >
+          <a
+            href="#"
+            class="block text-dashboard-text-secondary font-medium text-base py-2 hover:text-dashboard-text-primary transition-colors"
+            >Plants</a
+          >
+          <a
+            href="#"
+            class="block text-dashboard-text-secondary font-medium text-base py-2 hover:text-dashboard-text-primary transition-colors"
+            >Controllers</a
+          >
+          <a
+            href="#"
+            class="block text-dashboard-text-secondary font-medium text-base py-2 hover:text-dashboard-text-primary transition-colors"
+            >Reports</a
+          >
+          <a
+            href="#"
+            class="block text-dashboard-text-secondary font-medium text-base py-2 hover:text-dashboard-text-primary transition-colors"
+            >Settings</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Demo Content Area (to show sticky behavior) -->
+    <div class="pt-16 p-8">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-dashboard-text-primary mb-4">
+          Navigation Demo
+        </h1>
+        <p class="text-dashboard-text-secondary mb-8">
+          This demonstrates the sticky navigation bar behavior. Scroll down to
+          see how it stays fixed at the top.
+        </p>
+
+        <!-- Demo cards to create scrollable content -->
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div
+            class="bg-white p-6 rounded-lg border border-dashboard-border-light"
+          >
+            <h3 class="font-semibold text-dashboard-text-primary mb-2">
+              Feature 1
+            </h3>
+            <p class="text-dashboard-text-secondary">
+              Navigation stays fixed while scrolling
+            </p>
+          </div>
+          <div
+            class="bg-white p-6 rounded-lg border border-dashboard-border-light"
+          >
+            <h3 class="font-semibold text-dashboard-text-primary mb-2">
+              Feature 2
+            </h3>
+            <p class="text-dashboard-text-secondary">
+              Responsive mobile menu toggle
+            </p>
+          </div>
+          <div
+            class="bg-white p-6 rounded-lg border border-dashboard-border-light"
+          >
+            <h3 class="font-semibold text-dashboard-text-primary mb-2">
+              Feature 3
+            </h3>
+            <p class="text-dashboard-text-secondary">
+              User dropdown with profile options
+            </p>
+          </div>
+        </div>
+
+        <!-- More content to demonstrate scrolling -->
+        <div class="mt-12 space-y-6">
+          <div
+            class="bg-white p-8 rounded-lg border border-dashboard-border-light"
+          >
+            <h2 class="text-xl font-semibold text-dashboard-text-primary mb-4">
+              Search Functionality
+            </h2>
+            <p class="text-dashboard-text-secondary">
+              Try typing in the search bar to see the interactive behavior.
+            </p>
+          </div>
+          <div
+            class="bg-white p-8 rounded-lg border border-dashboard-border-light"
+          >
+            <h2 class="text-xl font-semibold text-dashboard-text-primary mb-4">
+              Notification System
+            </h2>
+            <p class="text-dashboard-text-secondary">
+              Click the notification bell to see alerts (with red badge
+              indicator).
+            </p>
+          </div>
+          <div
+            class="bg-white p-8 rounded-lg border border-dashboard-border-light"
+          >
+            <h2 class="text-xl font-semibold text-dashboard-text-primary mb-4">
+              Responsive Design
+            </h2>
+            <p class="text-dashboard-text-secondary">
+              Resize your browser window to see mobile menu behavior on smaller
+              screens.
+            </p>
+          </div>
+        </div>
+
+        <!-- Extra content for scrolling -->
+        <div
+          class="mt-12 h-96 bg-gradient-to-b from-gray-50 to-white rounded-lg border border-dashboard-border-light flex items-center justify-center"
+        >
+          <p class="text-dashboard-text-muted">
+            Scroll up to see the fixed navigation bar
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /**
+       * Navigation Bar JavaScript
+       * Handles mobile menu toggle, user dropdown, search, and notifications
+       */
+      class NavigationController {
+        constructor() {
+          this.mobileMenuOpen = false;
+          this.userDropdownOpen = false;
+          this.init();
+        }
+
+        init() {
+          this.setupEventListeners();
+          this.setupClickOutside();
+          this.setupKeyboardShortcuts();
+        }
+
+        /**
+         * Set up all event listeners for navigation interactions
+         */
+        setupEventListeners() {
+          // Mobile menu toggle
+          const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+          mobileMenuBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.toggleMobileMenu();
+          });
+
+          // User profile dropdown toggle
+          const userProfileBtn = document.getElementById("user-profile-btn");
+          userProfileBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.toggleUserDropdown();
+          });
+
+          // Notification button
+          const notificationBtn = document.getElementById("notification-btn");
+          notificationBtn?.addEventListener("click", () => {
+            this.showNotification();
+          });
+
+          // Search input functionality
+          const searchInput = document.getElementById("search-input");
+          searchInput?.addEventListener("input", (e) => {
+            this.handleSearch(e.target.value);
+          });
+
+          searchInput?.addEventListener("focus", () => {
+            searchInput.parentElement.classList.add(
+              "ring-2",
+              "ring-primary-teal",
+            );
+          });
+
+          searchInput?.addEventListener("blur", () => {
+            searchInput.parentElement.classList.remove(
+              "ring-2",
+              "ring-primary-teal",
+            );
+          });
+        }
+
+        /**
+         * Set up click outside handlers to close dropdowns
+         */
+        setupClickOutside() {
+          document.addEventListener("click", (e) => {
+            // Close mobile menu if clicking outside
+            if (
+              this.mobileMenuOpen &&
+              !e.target.closest("#mobile-menu") &&
+              !e.target.closest("#mobile-menu-btn")
+            ) {
+              this.closeMobileMenu();
+            }
+
+            // Close user dropdown if clicking outside
+            if (
+              this.userDropdownOpen &&
+              !e.target.closest("#user-dropdown") &&
+              !e.target.closest("#user-profile-btn")
+            ) {
+              this.closeUserDropdown();
+            }
+          });
+        }
+
+        /**
+         * Set up keyboard shortcuts
+         */
+        setupKeyboardShortcuts() {
+          document.addEventListener("keydown", (e) => {
+            // Escape key closes dropdowns
+            if (e.key === "Escape") {
+              this.closeMobileMenu();
+              this.closeUserDropdown();
+            }
+
+            // Ctrl/Cmd + K focuses search
+            if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+              e.preventDefault();
+              document.getElementById("search-input")?.focus();
+            }
+          });
+        }
+
+        /**
+         * Toggle mobile menu with smooth animation
+         */
+        toggleMobileMenu() {
+          const mobileMenu = document.getElementById("mobile-menu");
+          const menuIcon = document.getElementById("menu-icon");
+          const closeIcon = document.getElementById("close-icon");
+
+          if (!this.mobileMenuOpen) {
+            // Open mobile menu
+            mobileMenu.classList.remove("hidden");
+            menuIcon.classList.add("hidden");
+            closeIcon.classList.remove("hidden");
+
+            // Add animation
+            setTimeout(() => {
+              mobileMenu.style.opacity = "1";
+              mobileMenu.style.transform = "translateY(0)";
+            }, 10);
+
+            this.mobileMenuOpen = true;
+          } else {
+            this.closeMobileMenu();
+          }
+        }
+
+        /**
+         * Close mobile menu
+         */
+        closeMobileMenu() {
+          if (!this.mobileMenuOpen) return;
+
+          const mobileMenu = document.getElementById("mobile-menu");
+          const menuIcon = document.getElementById("menu-icon");
+          const closeIcon = document.getElementById("close-icon");
+
+          // Animation out
+          mobileMenu.style.opacity = "0";
+          mobileMenu.style.transform = "translateY(-10px)";
+
+          setTimeout(() => {
+            mobileMenu.classList.add("hidden");
+            menuIcon.classList.remove("hidden");
+            closeIcon.classList.add("hidden");
+          }, 150);
+
+          this.mobileMenuOpen = false;
+        }
+
+        /**
+         * Toggle user dropdown with smooth animation
+         */
+        toggleUserDropdown() {
+          const userDropdown = document.getElementById("user-dropdown");
+
+          if (!this.userDropdownOpen) {
+            // Open dropdown
+            userDropdown.classList.remove("hidden");
+            userDropdown.classList.add("dropdown-enter");
+
+            setTimeout(() => {
+              userDropdown.classList.remove("dropdown-enter");
+              userDropdown.classList.add("dropdown-enter-active");
+            }, 10);
+
+            this.userDropdownOpen = true;
+          } else {
+            this.closeUserDropdown();
+          }
+        }
+
+        /**
+         * Close user dropdown
+         */
+        closeUserDropdown() {
+          if (!this.userDropdownOpen) return;
+
+          const userDropdown = document.getElementById("user-dropdown");
+
+          userDropdown.classList.remove("dropdown-enter-active");
+          userDropdown.classList.add("dropdown-exit-active");
+
+          setTimeout(() => {
+            userDropdown.classList.add("hidden");
+            userDropdown.classList.remove("dropdown-exit-active");
+          }, 150);
+
+          this.userDropdownOpen = false;
+        }
+
+        /**
+         * Handle search functionality
+         */
+        handleSearch(query) {
+          if (query.length > 0) {
+            console.log("Searching for:", query);
+            // Here you would typically make an API call or filter results
+            // For demo purposes, we'll just log it
+          }
+        }
+
+        /**
+         * Show notification (demo functionality)
+         */
+        showNotification() {
+          // Create a simple notification
+          const notification = document.createElement("div");
+          notification.className = `
+            fixed top-20 right-4 bg-white border border-dashboard-border-light 
+            rounded-lg shadow-lg p-4 z-50 max-w-sm transform translate-x-full 
+            opacity-0 transition-all duration-300
+          `;
+
+          notification.innerHTML = `
+            <div class="flex items-start gap-3">
+              <div class="w-2 h-2 bg-dashboard-status-red rounded-full mt-2"></div>
+              <div>
+                <p class="font-medium text-dashboard-text-primary text-sm">New Alert</p>
+                <p class="text-dashboard-text-secondary text-xs">Your tomato plants need attention</p>
+              </div>
+              <button onclick="this.parentElement.parentElement.remove()" class="text-dashboard-text-muted hover:text-dashboard-text-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          `;
+
+          document.body.appendChild(notification);
+
+          // Animate in
+          setTimeout(() => {
+            notification.classList.remove("translate-x-full", "opacity-0");
+          }, 100);
+
+          // Auto remove after 5 seconds
+          setTimeout(() => {
+            notification.classList.add("translate-x-full", "opacity-0");
+            setTimeout(() => notification.remove(), 300);
+          }, 5000);
+        }
+      }
+
+      // Initialize navigation when DOM is ready
+      document.addEventListener("DOMContentLoaded", () => {
+        new NavigationController();
+      });
+    </script>
+  </body>
+</html>
