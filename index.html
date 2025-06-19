@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/placeholder.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Garden Dashboard</title>
+    <title>HarvestPro - Garden Management Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
+              "primary-teal": "rgb(0, 128, 128)",
               "dashboard-text-primary": "rgb(17, 24, 39)",
               "dashboard-text-secondary": "rgb(71, 85, 105)",
               "dashboard-text-muted": "rgb(148, 163, 184)",
@@ -19,7 +20,6 @@
               "dashboard-status-amber": "rgb(245, 158, 11)",
               "dashboard-status-red": "rgb(239, 68, 68)",
               "dashboard-overlay": "rgba(241, 245, 249, 0.5)",
-              "primary-teal": "rgb(0, 128, 128)",
             },
             fontSize: {
               "heading-large": [
@@ -42,8 +42,6 @@
               "section-bottom": "48px",
               "heading-bottom": "32px",
               "card-spacing": "24px",
-              "element-spacing": "16px",
-              "small-spacing": "8px",
             },
           },
         },
@@ -68,45 +66,210 @@
     </style>
   </head>
   <body class="bg-white font-sans">
-    <!-- Notification Area (Fixed positioning, bottom-right) -->
-    <div
-      id="notification-area"
-      class="fixed bottom-4 right-4 max-w-[420px] z-50 pointer-events-none"
-    >
-      <!-- Notifications will be inserted here via JavaScript -->
-    </div>
-
-    <div class="min-h-screen bg-white">
-      <!-- Header -->
-      <header
-        class="bg-white/80 backdrop-blur-md border-b border-dashboard-border-light h-16 fixed top-0 left-0 right-0 z-40"
+    <!-- Main Layout Container -->
+    <div class="flex min-h-screen bg-white">
+      <!-- Sidebar Navigation -->
+      <aside
+        id="sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-primary-teal border-r border-primary-teal transform transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full"
       >
-        <div class="flex items-center justify-between h-full px-6">
-          <!-- Mobile Menu Button -->
-          <button
-            id="mobile-menu-btn"
-            class="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        <!-- Sidebar Header -->
+        <div
+          class="flex items-center h-20 px-4 border-b border-primary-teal/20"
+        >
+          <div
+            class="flex items-center justify-center w-12 h-12 bg-gray-50 rounded-full flex-shrink-0"
           >
-            <svg
-              class="w-6 h-6 text-dashboard-text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <img
+              src="/placeholder.svg"
+              alt="HarvestPro Logo"
+              class="w-10 h-10 object-contain"
+            />
+          </div>
+          <div class="ml-3 flex-1">
+            <h1
+              class="text-lg font-bold text-gray-50 truncate whitespace-nowrap"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              ></path>
-            </svg>
-          </button>
+              HarvestPro
+            </h1>
+            <p class="text-sm text-gray-50/70">Smart Garden Management</p>
+          </div>
+        </div>
 
-          <!-- Search Bar -->
-          <div class="flex-1 max-w-md mx-4">
-            <div class="relative">
+        <!-- Sidebar Content -->
+        <div class="flex flex-col flex-1 justify-between h-full">
+          <!-- Navigation Menu -->
+          <nav class="px-4 py-6">
+            <ul class="space-y-2">
+              <!-- Dashboard - Active -->
+              <li>
+                <button
+                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 bg-black/10 rounded-lg transition-colors duration-150"
+                >
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                    ></path>
+                  </svg>
+                  <span class="truncate whitespace-nowrap">Dashboard</span>
+                </button>
+              </li>
+
+              <!-- Plant -->
+              <li>
+                <button
+                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 hover:bg-black/10 rounded-lg transition-colors duration-150"
+                >
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 20h10M10 20c5.5-2.5.8-6.4 3-10M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8zM14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"
+                    ></path>
+                  </svg>
+                  <span class="truncate whitespace-nowrap">Plant</span>
+                </button>
+              </li>
+
+              <!-- Bed -->
+              <li>
+                <button
+                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 hover:bg-black/10 rounded-lg transition-colors duration-150"
+                >
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <rect
+                      width="18"
+                      height="18"
+                      x="3"
+                      y="3"
+                      rx="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></rect>
+                    <path
+                      d="M3 9h18"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                    <path
+                      d="M9 21V9"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                  </svg>
+                  <span class="truncate whitespace-nowrap">Bed</span>
+                </button>
+              </li>
+
+              <!-- Notification - Disabled -->
+              <li>
+                <button
+                  disabled
+                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
+                >
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"
+                    ></path>
+                  </svg>
+                  <span class="truncate whitespace-nowrap">Notification</span>
+                </button>
+              </li>
+
+              <!-- Report - Disabled -->
+              <li>
+                <button
+                  disabled
+                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
+                >
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"
+                    ></path>
+                  </svg>
+                  <span class="truncate whitespace-nowrap">Report</span>
+                </button>
+              </li>
+
+              <!-- Support - Disabled -->
+              <li>
+                <button
+                  disabled
+                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
+                >
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path
+                      d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
+                    <path d="M12 17h.01"></path>
+                  </svg>
+                  <span class="truncate whitespace-nowrap">Supports</span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Settings Section -->
+          <div class="px-4 py-2 border-t border-primary-teal/20">
+            <button
+              disabled
+              class="w-full flex items-center gap-3 px-3 py-2 h-10 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
+            >
               <svg
-                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-dashboard-text-muted"
+                class="w-5 h-5 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -115,25 +278,30 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
                 ></path>
+                <circle cx="12" cy="12" r="3"></circle>
               </svg>
-              <input
-                type="text"
-                placeholder="Search plants, controllers..."
-                class="w-full pl-10 pr-4 py-2 bg-dashboard-overlay border border-dashboard-border-light rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all"
-              />
-            </div>
+              <span class="truncate whitespace-nowrap">Settings</span>
+            </button>
           </div>
+        </div>
+      </aside>
 
-          <!-- User Actions -->
-          <div class="flex items-center gap-2">
-            <!-- Notification Button -->
+      <!-- Main Content Area -->
+      <div class="flex-1 lg:ml-64">
+        <!-- Header -->
+        <header
+          class="bg-white/80 backdrop-blur-md border-b border-dashboard-border-light h-16 fixed top-0 right-0 left-0 lg:left-64 z-40"
+        >
+          <div class="flex items-center justify-between h-full px-6">
+            <!-- Mobile Menu Button -->
             <button
-              id="notification-btn"
-              class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              id="mobile-menu-btn"
+              class="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <svg
+                id="hamburger-icon"
                 class="w-6 h-6 text-dashboard-text-primary"
                 fill="none"
                 stroke="currentColor"
@@ -143,318 +311,546 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M15 17h5l-3.5-3.5c-.828-.828-2.172-.828-3 0L9 18h5zm0 0v1a3 3 0 01-6 0v-1m6 0H9"
+                  d="M4 6h16M4 12h16M4 18h16"
                 ></path>
               </svg>
-              <span
-                class="absolute top-1 right-1 w-2 h-2 bg-dashboard-status-red rounded-full"
-              ></span>
+              <svg
+                id="close-icon"
+                class="w-6 h-6 text-dashboard-text-primary hidden"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
             </button>
 
-            <!-- User Profile Button -->
-            <button
-              id="user-profile-btn"
-              class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <div
-                class="w-8 h-8 bg-gradient-to-br from-primary-teal to-blue-500 rounded-full flex items-center justify-center"
-              >
-                <span class="text-white text-sm font-medium">JD</span>
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-md mx-4">
+              <div class="relative">
+                <svg
+                  class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-dashboard-text-muted"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search plants, controllers..."
+                  class="w-full pl-10 pr-4 py-2 bg-dashboard-overlay border border-dashboard-border-light rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all"
+                />
               </div>
-            </button>
+            </div>
+
+            <!-- User Actions -->
+            <div class="flex items-center gap-2">
+              <!-- Notification Button -->
+              <button
+                id="notification-btn"
+                class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg
+                  class="w-6 h-6 text-dashboard-text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-3.5-3.5c-.828-.828-2.172-.828-3 0L9 18h5zm0 0v1a3 3 0 01-6 0v-1m6 0H9"
+                  ></path>
+                </svg>
+                <span
+                  class="absolute top-1 right-1 w-2 h-2 bg-dashboard-status-red rounded-full"
+                ></span>
+              </button>
+
+              <!-- User Profile Button -->
+              <button
+                id="user-profile-btn"
+                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <div
+                  class="w-8 h-8 bg-gradient-to-br from-primary-teal to-blue-500 rounded-full flex items-center justify-center"
+                >
+                  <span class="text-white text-sm font-medium">JD</span>
+                </div>
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <!-- Main Content -->
-      <main
-        class="pt-16 min-h-screen bg-white custom-scrollbar overflow-y-auto"
-      >
-        <div class="p-6">
-          <!-- Page Header -->
-          <div class="mb-heading-bottom">
-            <h1 class="text-heading-large text-dashboard-text-primary mb-2">
-              Dashboard
-            </h1>
-            <p class="text-body-large text-dashboard-text-secondary">
-              My Garden View
-            </p>
+        <!-- Main Content -->
+        <main class="pt-16 min-h-screen bg-white custom-scrollbar">
+          <div class="p-6 max-w-5xl mx-auto">
+            <!-- Page Header -->
+            <div class="mb-heading-bottom">
+              <h1 class="text-heading-large text-dashboard-text-primary mb-2">
+                Dashboard
+              </h1>
+              <p class="text-body-large text-dashboard-text-secondary">
+                My Garden View
+              </p>
+            </div>
+
+            <!-- My Favourite Plant Section -->
+            <section class="mb-section-bottom">
+              <div class="flex items-center gap-3 mb-6">
+                <svg
+                  class="w-6 h-6 text-primary-teal"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 20h10M10 20c5.5-2.5.8-6.4 3-10M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8zM14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"
+                  ></path>
+                </svg>
+                <h2 class="text-heading-medium text-dashboard-text-primary">
+                  My Favourite Plant
+                </h2>
+              </div>
+
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
+              >
+                <!-- Herb Bed Card -->
+                <div
+                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+                >
+                  <div
+                    class="h-36 bg-gradient-to-r from-teal-50/20 to-emerald-100/20 relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
+                    >
+                      <span class="text-4xl">🌱</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex items-start justify-between mb-4">
+                      <h3
+                        class="text-heading-small text-dashboard-text-primary"
+                      >
+                        Herb Bed
+                      </h3>
+                      <div
+                        class="flex items-center gap-1.5 bg-dashboard-status-green text-white px-3 py-1 rounded-full flex-shrink-0"
+                      >
+                        <div
+                          class="w-2 h-2 bg-green-200 rounded-full flex-shrink-0"
+                        ></div>
+                        <span class="text-body-tiny whitespace-nowrap"
+                          >All Good</span
+                        >
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <p class="text-body-small text-dashboard-text-secondary">
+                        Garden Controller A
+                      </p>
+                      <p class="text-body-small text-dashboard-text-muted">
+                        Herb Garden
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tomato Card -->
+                <div
+                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+                >
+                  <div
+                    class="h-36 bg-gradient-to-r from-teal-50/20 to-emerald-100/20 relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
+                    >
+                      <span class="text-4xl">🌱</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex items-start justify-between mb-4">
+                      <h3
+                        class="text-heading-small text-dashboard-text-primary"
+                      >
+                        Tomato
+                      </h3>
+                      <div
+                        class="flex items-center gap-1.5 bg-dashboard-status-amber text-white px-3 py-1 rounded-full flex-shrink-0"
+                      >
+                        <div
+                          class="w-2 h-2 bg-amber-200 rounded-full flex-shrink-0"
+                        ></div>
+                        <span class="text-body-tiny whitespace-nowrap"
+                          >Check Bed</span
+                        >
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <p class="text-body-small text-dashboard-text-secondary">
+                        Greenhouse Controller
+                      </p>
+                      <p class="text-body-small text-dashboard-text-muted">
+                        Vegetable Garden
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Lettuce Patch Card -->
+                <div
+                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+                >
+                  <div
+                    class="h-36 bg-gradient-to-r from-teal-50/20 to-emerald-100/20 relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
+                    >
+                      <span class="text-4xl">🌱</span>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <div class="flex items-start justify-between mb-4">
+                      <h3
+                        class="text-heading-small text-dashboard-text-primary"
+                      >
+                        Lettuce Patch
+                      </h3>
+                      <div
+                        class="flex items-center gap-1.5 bg-dashboard-status-red text-white px-3 py-1 rounded-full flex-shrink-0"
+                      >
+                        <div
+                          class="w-2 h-2 bg-red-200 rounded-full flex-shrink-0"
+                        ></div>
+                        <span class="text-body-tiny whitespace-nowrap"
+                          >Urgent Issue</span
+                        >
+                      </div>
+                    </div>
+                    <div class="space-y-1">
+                      <p class="text-body-small text-dashboard-text-secondary">
+                        Main Garden Controller
+                      </p>
+                      <p class="text-body-small text-dashboard-text-muted">
+                        Flower Beds
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- My Favourite Controller Section -->
+            <section class="pb-6">
+              <div class="flex items-center gap-3 mb-6">
+                <svg
+                  class="w-6 h-6 text-primary-teal"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                  ></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <h2 class="text-heading-medium text-dashboard-text-primary">
+                  My Favourite Controller
+                </h2>
+              </div>
+
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
+              >
+                <!-- Garden Controller A Card -->
+                <div
+                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+                >
+                  <div
+                    class="h-36 bg-gradient-to-r from-teal-50/20 to-teal-100/20 relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
+                    >
+                      <span class="text-4xl">🎮</span>
+                    </div>
+                    <div class="absolute top-3 right-3">
+                      <div
+                        class="w-10 h-8 rounded-full flex items-center justify-center"
+                      >
+                        <svg
+                          class="w-6 h-6 text-dashboard-text-primary"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 20h.01M2 8.82a15 15 0 0 1 20 0M5 12.859a10 10 0 0 1 14 0M8.5 16.429a5 5 0 0 1 7 0"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <h3
+                      class="text-heading-small text-dashboard-text-primary mb-3"
+                    >
+                      Garden Controller A
+                    </h3>
+                    <div class="text-sm space-y-2">
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Address:</span
+                        >
+                        <span class="text-dashboard-text-secondary break-all"
+                          >Not set</span
+                        >
+                      </div>
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Location:</span
+                        >
+                        <span class="text-dashboard-text-secondary"
+                          >(x: y)</span
+                        >
+                      </div>
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Favorite Beds:</span
+                        >
+                        <span class="text-dashboard-text-secondary font-bold"
+                          >1</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Greenhouse Controller Card -->
+                <div
+                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+                >
+                  <div
+                    class="h-36 bg-gradient-to-r from-teal-50/20 to-teal-100/20 relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
+                    >
+                      <span class="text-4xl">🎮</span>
+                    </div>
+                    <div class="absolute top-3 right-3">
+                      <div
+                        class="w-10 h-8 rounded-full flex items-center justify-center"
+                      >
+                        <svg
+                          class="w-6 h-6 text-dashboard-text-primary"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 20h.01M2 8.82a15 15 0 0 1 20 0M5 12.859a10 10 0 0 1 14 0M8.5 16.429a5 5 0 0 1 7 0"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <h3
+                      class="text-heading-small text-dashboard-text-primary mb-3"
+                    >
+                      Greenhouse Controller
+                    </h3>
+                    <div class="text-sm space-y-2">
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Address:</span
+                        >
+                        <span class="text-dashboard-text-secondary break-all"
+                          >Not set</span
+                        >
+                      </div>
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Location:</span
+                        >
+                        <span class="text-dashboard-text-secondary"
+                          >(x: y)</span
+                        >
+                      </div>
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Favorite Beds:</span
+                        >
+                        <span class="text-dashboard-text-secondary font-bold"
+                          >3</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hydroponic System Card -->
+                <div
+                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
+                >
+                  <div
+                    class="h-36 bg-gradient-to-r from-teal-50/20 to-teal-100/20 relative"
+                  >
+                    <div
+                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
+                    >
+                      <span class="text-4xl">🎮</span>
+                    </div>
+                    <div class="absolute top-3 right-3">
+                      <div
+                        class="w-10 h-8 bg-gray-100 rounded-full flex items-center justify-center"
+                      >
+                        <svg
+                          class="w-6 h-6 text-dashboard-text-secondary"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 20h.01M8.5 16.429a5 5 0 0 1 7 0M5 12.859a10 10 0 0 1 5.17-2.69M19 12.859a10 10 0 0 0-2.007-1.523M2 8.82a15 15 0 0 1 4.177-2.643M22 8.82a15 15 0 0 0-11.288-3.764m2 2 20 20"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-4">
+                    <h3
+                      class="text-heading-small text-dashboard-text-primary mb-3"
+                    >
+                      Hydroponic System
+                    </h3>
+                    <div class="text-sm space-y-2">
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Address:</span
+                        >
+                        <span class="text-dashboard-text-secondary break-all"
+                          >Not set</span
+                        >
+                      </div>
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Location:</span
+                        >
+                        <span class="text-dashboard-text-secondary"
+                          >(x: y)</span
+                        >
+                      </div>
+                      <div class="flex items-start gap-1">
+                        <span
+                          class="text-dashboard-text-secondary flex-shrink-0"
+                          >Favorite Beds:</span
+                        >
+                        <span class="text-dashboard-text-secondary font-bold"
+                          >2</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
-
-          <!-- My Favourite Plant Section -->
-          <section class="mb-section-bottom">
-            <div class="flex items-center gap-3 mb-6">
-              <span class="text-2xl">🌱</span>
-              <h2 class="text-heading-medium text-dashboard-text-primary">
-                My Favourite Plant
-              </h2>
-            </div>
-
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
-            >
-              <!-- Herb Bed Card -->
-              <div
-                class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-3xl">🌱</span>
-                  <span
-                    class="bg-dashboard-status-green/10 text-dashboard-status-green text-body-tiny px-3 py-1 rounded-full font-medium"
-                    >All Good</span
-                  >
-                </div>
-                <h3 class="text-heading-small text-dashboard-text-primary mb-2">
-                  Herb Bed
-                </h3>
-                <div class="space-y-1">
-                  <p class="text-body-small text-dashboard-text-secondary">
-                    Garden Controller A
-                  </p>
-                  <p class="text-body-small text-dashboard-text-muted">
-                    Herb Garden
-                  </p>
-                </div>
-              </div>
-
-              <!-- Tomato Card -->
-              <div
-                class="bg-gradient-to-br from-orange-50 to-amber-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-3xl">🌱</span>
-                  <span
-                    class="bg-dashboard-status-amber/10 text-dashboard-status-amber text-body-tiny px-3 py-1 rounded-full font-medium"
-                    >Check Bed</span
-                  >
-                </div>
-                <h3 class="text-heading-small text-dashboard-text-primary mb-2">
-                  Tomato
-                </h3>
-                <div class="space-y-1">
-                  <p class="text-body-small text-dashboard-text-secondary">
-                    Greenhouse Controller
-                  </p>
-                  <p class="text-body-small text-dashboard-text-muted">
-                    Vegetable Garden
-                  </p>
-                </div>
-              </div>
-
-              <!-- Lettuce Patch Card -->
-              <div
-                class="bg-gradient-to-br from-red-50 to-pink-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-3xl">🌱</span>
-                  <span
-                    class="bg-dashboard-status-red/10 text-dashboard-status-red text-body-tiny px-3 py-1 rounded-full font-medium"
-                    >Urgent Issue</span
-                  >
-                </div>
-                <h3 class="text-heading-small text-dashboard-text-primary mb-2">
-                  Lettuce Patch
-                </h3>
-                <div class="space-y-1">
-                  <p class="text-body-small text-dashboard-text-secondary">
-                    Main Garden Controller
-                  </p>
-                  <p class="text-body-small text-dashboard-text-muted">
-                    Flower Beds
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- My Favourite Controller Section -->
-          <section class="mb-section-bottom">
-            <div class="flex items-center gap-3 mb-6">
-              <span class="text-2xl">⚙️</span>
-              <h2 class="text-heading-medium text-dashboard-text-primary">
-                My Favourite Controller
-              </h2>
-            </div>
-
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
-            >
-              <!-- Garden Controller A Card -->
-              <div
-                class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-3xl">🎮</span>
-                  <div class="flex items-center gap-1">
-                    <div
-                      class="w-2 h-2 bg-dashboard-status-green rounded-full"
-                    ></div>
-                    <span class="text-body-tiny text-dashboard-text-muted"
-                      >WiFi</span
-                    >
-                  </div>
-                </div>
-                <h3 class="text-heading-small text-dashboard-text-primary mb-3">
-                  Garden Controller A
-                </h3>
-                <div class="space-y-2">
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Address:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >Not set</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Location:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >(x: y)</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Favourite Beds:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >1</span
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <!-- Greenhouse Controller Card -->
-              <div
-                class="bg-gradient-to-br from-purple-50 to-violet-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-3xl">🎮</span>
-                  <div class="flex items-center gap-1">
-                    <div
-                      class="w-2 h-2 bg-dashboard-status-green rounded-full"
-                    ></div>
-                    <span class="text-body-tiny text-dashboard-text-muted"
-                      >WiFi</span
-                    >
-                  </div>
-                </div>
-                <h3 class="text-heading-small text-dashboard-text-primary mb-3">
-                  Greenhouse Controller
-                </h3>
-                <div class="space-y-2">
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Address:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >Not set</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Location:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >(x: y)</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Favourite Beds:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >3</span
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <!-- Hydroponic System Card -->
-              <div
-                class="bg-gradient-to-br from-slate-50 to-gray-50 border border-dashboard-border-light rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer card-hover"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-3xl">🎮</span>
-                  <div class="flex items-center gap-1">
-                    <div
-                      class="w-2 h-2 bg-dashboard-status-red rounded-full"
-                    ></div>
-                    <span class="text-body-tiny text-dashboard-text-muted"
-                      >WiFi</span
-                    >
-                  </div>
-                </div>
-                <h3 class="text-heading-small text-dashboard-text-primary mb-3">
-                  Hydroponic System
-                </h3>
-                <div class="space-y-2">
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Address:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >Not set</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Location:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >(x: y)</span
-                    >
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="text-body-small text-dashboard-text-muted"
-                      >Favourite Beds:</span
-                    >
-                    <span class="text-body-small text-dashboard-text-secondary"
-                      >2</span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
 
+    <!-- Mobile Sidebar Overlay -->
+    <div
+      id="sidebar-overlay"
+      class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden"
+    ></div>
+
     <script>
-      // Dashboard JavaScript Interactions
-      class DashboardApp {
+      /**
+       * Garden Dashboard JavaScript
+       * Handles sidebar navigation, mobile menu, and dashboard interactions
+       */
+      class GardenDashboard {
         constructor() {
+          this.sidebarOpen = false;
           this.init();
         }
 
         init() {
           this.setupEventListeners();
-          this.setupCardHovers();
-          this.setupNotifications();
+          this.setupCardInteractions();
         }
 
+        /**
+         * Set up all event listeners
+         */
         setupEventListeners() {
           // Mobile menu toggle
           const mobileMenuBtn = document.getElementById("mobile-menu-btn");
           mobileMenuBtn?.addEventListener("click", () => {
-            this.toggleMobileMenu();
+            this.toggleSidebar();
+          });
+
+          // Sidebar overlay click
+          const sidebarOverlay = document.getElementById("sidebar-overlay");
+          sidebarOverlay?.addEventListener("click", () => {
+            this.closeSidebar();
           });
 
           // Notification button
           const notificationBtn = document.getElementById("notification-btn");
           notificationBtn?.addEventListener("click", () => {
             this.showNotification(
-              "You have 3 new alerts from your garden controllers",
-              "info",
+              "Garden Alert: Check your tomato plants",
+              "warning",
             );
           });
 
           // User profile button
           const userProfileBtn = document.getElementById("user-profile-btn");
           userProfileBtn?.addEventListener("click", () => {
-            this.showUserMenu();
+            this.showNotification("Profile menu would open here", "info");
           });
 
           // Search functionality
@@ -464,11 +860,36 @@
           searchInput?.addEventListener("input", (e) => {
             this.handleSearch(e.target.value);
           });
+
+          // Escape key to close sidebar
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && this.sidebarOpen) {
+              this.closeSidebar();
+            }
+          });
+
+          // Window resize handler
+          window.addEventListener("resize", () => {
+            if (window.innerWidth >= 1024 && this.sidebarOpen) {
+              this.closeSidebar();
+            }
+          });
         }
 
-        setupCardHovers() {
-          const cards = document.querySelectorAll(".card-hover");
+        /**
+         * Set up card interactions
+         */
+        setupCardInteractions() {
+          const cards = document.querySelectorAll(
+            ".cursor-pointer:not(button)",
+          );
           cards.forEach((card) => {
+            card.addEventListener("click", () => {
+              const title =
+                card.querySelector("h3")?.textContent || "Garden Item";
+              this.showNotification(`Viewing details for ${title}`, "info");
+            });
+
             card.addEventListener("mouseenter", () => {
               card.style.transform = "translateY(-2px)";
             });
@@ -476,40 +897,57 @@
             card.addEventListener("mouseleave", () => {
               card.style.transform = "translateY(0)";
             });
-
-            card.addEventListener("click", () => {
-              const title = card.querySelector("h3")?.textContent || "Item";
-              this.showNotification(`Clicked on ${title}`, "success");
-            });
           });
         }
 
-        setupNotifications() {
-          // Show welcome notification after page load
-          setTimeout(() => {
-            this.showNotification(
-              "Welcome to your Garden Dashboard! 🌱",
-              "success",
-            );
-          }, 1000);
+        /**
+         * Toggle sidebar visibility
+         */
+        toggleSidebar() {
+          if (this.sidebarOpen) {
+            this.closeSidebar();
+          } else {
+            this.openSidebar();
+          }
         }
 
-        toggleMobileMenu() {
-          console.log("Mobile menu toggled");
-          this.showNotification(
-            "Mobile menu functionality would go here",
-            "info",
-          );
+        /**
+         * Open sidebar
+         */
+        openSidebar() {
+          const sidebar = document.getElementById("sidebar");
+          const overlay = document.getElementById("sidebar-overlay");
+          const hamburgerIcon = document.getElementById("hamburger-icon");
+          const closeIcon = document.getElementById("close-icon");
+
+          sidebar.classList.remove("-translate-x-full");
+          overlay.classList.remove("hidden");
+          hamburgerIcon.classList.add("hidden");
+          closeIcon.classList.remove("hidden");
+
+          this.sidebarOpen = true;
         }
 
-        showUserMenu() {
-          console.log("User menu opened");
-          this.showNotification(
-            "User profile options would appear here",
-            "info",
-          );
+        /**
+         * Close sidebar
+         */
+        closeSidebar() {
+          const sidebar = document.getElementById("sidebar");
+          const overlay = document.getElementById("sidebar-overlay");
+          const hamburgerIcon = document.getElementById("hamburger-icon");
+          const closeIcon = document.getElementById("close-icon");
+
+          sidebar.classList.add("-translate-x-full");
+          overlay.classList.add("hidden");
+          hamburgerIcon.classList.remove("hidden");
+          closeIcon.classList.add("hidden");
+
+          this.sidebarOpen = false;
         }
 
+        /**
+         * Handle search functionality
+         */
         handleSearch(query) {
           if (query.length > 2) {
             console.log("Searching for:", query);
@@ -517,9 +955,21 @@
           }
         }
 
+        /**
+         * Show notification
+         */
         showNotification(message, type = "info") {
-          const notificationArea = document.getElementById("notification-area");
-          if (!notificationArea) return;
+          // Create notification container if it doesn't exist
+          let notificationContainer = document.getElementById(
+            "notification-container",
+          );
+          if (!notificationContainer) {
+            notificationContainer = document.createElement("div");
+            notificationContainer.id = "notification-container";
+            notificationContainer.className =
+              "fixed bottom-4 right-4 max-w-sm z-50 pointer-events-none";
+            document.body.appendChild(notificationContainer);
+          }
 
           const notification = document.createElement("div");
           const typeColors = {
@@ -533,7 +983,6 @@
             ${typeColors[type]}
             p-4 rounded-lg mb-2 transform translate-x-full opacity-0
             transition-all duration-300 ease-in-out pointer-events-auto
-            max-w-sm
           `;
 
           notification.innerHTML = `
@@ -547,7 +996,7 @@
             </div>
           `;
 
-          notificationArea.appendChild(notification);
+          notificationContainer.appendChild(notification);
 
           // Animate in
           setTimeout(() => {
@@ -566,19 +1015,16 @@
 
       // Initialize the dashboard when DOM is ready
       document.addEventListener("DOMContentLoaded", () => {
-        new DashboardApp();
-      });
+        new GardenDashboard();
 
-      // Add some global interactions
-      document.addEventListener("keydown", (e) => {
-        // Quick search with Ctrl/Cmd + K
-        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-          e.preventDefault();
-          const searchInput = document.querySelector(
-            'input[placeholder*="Search"]',
+        // Show welcome notification
+        setTimeout(() => {
+          const dashboard = new GardenDashboard();
+          dashboard.showNotification(
+            "Welcome to HarvestPro Dashboard! 🌱",
+            "success",
           );
-          searchInput?.focus();
-        }
+        }, 1000);
       });
     </script>
   </body>
