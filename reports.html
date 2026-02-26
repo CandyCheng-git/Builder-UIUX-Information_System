@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports - HarvestPro WaterSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Montserrat", "ui-sans-serif", "system-ui"],
+            },
+            colors: {
+              primary: { DEFAULT: "#356C48", foreground: "#F5F3EF" },
+              secondary: { DEFAULT: "#688654", foreground: "#431229" },
+              sidebar: {
+                DEFAULT: "#356C48",
+                foreground: "#F5F3EF",
+                accent: "#688654",
+                "accent-foreground": "#F5F3EF",
+              },
+              terracotta: "#D57A66",
+              sage: "#A789A2",
+              alert: "#D169D4",
+              sky: "#BFD7EA",
+              cream: "#F5F3EF",
+              charcoal: "#431229",
+              healthy: "#688654",
+              warning: "#D57A66",
+              danger: "#D169D4",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .card-gradient { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
+      .chart-container { position: relative; height: 320px; width: 100%; }
+      .chart-container-sm { position: relative; height: 260px; width: 100%; }
+      .heatmap-cell { width: 28px; height: 18px; display:inline-block; margin:1px; }
+
+      /* Design System - Typography */
+      h1, .heading-1 { font-size: 1.875rem; font-weight: 600; color: #356C48; line-height: 1.2; }
+      h2, .heading-2 { font-size: 1.5rem; font-weight: 600; color: #356C48; line-height: 1.3; }
+      h3, .heading-3 { font-size: 1.25rem; font-weight: 600; color: #356C48; line-height: 1.4; }
+      h4, .heading-4 { font-size: 1.125rem; font-weight: 600; color: #356C48; line-height: 1.4; }
+      .text-label { font-size: 0.875rem; font-weight: 500; color: #688654; }
+      .text-caption { font-size: 0.75rem; font-weight: 400; color: #688654; }
+      .text-body { font-size: 1rem; font-weight: 400; color: #33312E; line-height: 1.5; }
+
+      /* Design System - Buttons */
+      .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s ease; border: none; cursor: pointer; text-decoration: none; }
+      .btn-primary { background-color: #356C48; color: #F5F3EF; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-primary:hover { background-color: #2D5839; }
+      .btn-primary:active { background-color: #254830; }
+      .btn-primary:disabled { background-color: #9CA3AF; color: #E5E7EB; cursor: not-allowed; }
+
+      .btn-secondary { background-color: #F5F3EF; color: #356C48; border: 1px solid #E5E7EB; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-secondary:hover { background-color: #F3F4F6; }
+      .btn-secondary:active { background-color: #E5E7EB; }
+      .btn-secondary:disabled { background-color: #F9FAFB; color: #9CA3AF; cursor: not-allowed; border-color: #E5E7EB; }
+
+      .btn-secondary-gray { background-color: #F3F4F6; color: #688654; border: 1px solid #E5E7EB; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-secondary-gray:hover { background-color: #E5E7EB; }
+      .btn-secondary-gray:active { background-color: #D1D5DB; }
+      .btn-secondary-gray:disabled { background-color: #F9FAFB; color: #9CA3AF; cursor: not-allowed; }
+
+      .btn-danger { background-color: #DC2626; color: #FFFFFF; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-danger:hover { background-color: #B91C1C; }
+      .btn-danger:active { background-color: #991B1B; }
+      .btn-danger:disabled { background-color: #9CA3AF; color: #E5E7EB; cursor: not-allowed; }
+
+      /* Status Badge */
+      .status-badge { display: inline-block; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-align: center; white-space: nowrap; }
+      .status-badge-healthy { background-color: #3A6A49; color: #FFFFFF; }
+      .status-badge-warning { background-color: #D57A66; color: #FFFFFF; }
+      .status-badge-alert { background-color: #DC2626; color: #FFFFFF; }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="flex h-screen">
+      <button id="mobile-menu-btn" class="lg:hidden fixed top-4 left-4 z-50 bg-sidebar text-sidebar-foreground p-2 rounded-lg shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <div id="mobile-overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+      <!-- Sidebar (unchanged) -->
+      <div id="sidebar" class="flex h-screen w-64 flex-col bg-sidebar transition-transform duration-300 ease-in-out z-40 lg:translate-x-0 fixed lg:relative -translate-x-full">
+        <div class="flex items-center px-6 py-4">
+          <div class="flex items-center space-x-3">
+            <div class="bg-white bg-opacity-10 rounded-lg p-2">
+              <svg class="w-5 h-5" style="color:#f5f3ef" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.5 2 5.5 4.5 4.5 8c-0.5 1.5-0.5 3 0 4.5C5.5 15.5 8.5 18 12 18c1 0 2-0.2 2.9-0.6C16.8 16.8 18 15 18 13c0-2.2-1.8-4-4-4c-1.1 0-2.1 0.4-2.8 1.2C10.4 11 9.5 12 9.5 13.2c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5c0-0.3 0.2-0.5 0.5-0.5s0.5 0.2 0.5 0.5c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5c0-2.2 1.8-4 4-4 3.3 0 6 2.7 6 6 0 3.3-2.7 6-6 6-4.4 0-8-3.6-8-8 0-4.4 3.6-8 8-8z"/></svg>
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center">
+                <span class="text-lg font-light" style="color:#f5f3ef;letter-spacing:1px">harvest</span>
+                <span class="text-lg font-bold" style="color:#f5f3ef;letter-spacing:1px">PRO</span>
+              </div>
+              <div class="text-sm font-normal" style="color:#f5f3ef;margin-top:-2px;opacity:.9">WaterSense</div>
+            </div>
+          </div>
+        </div>
+        <nav class="flex-1 px-4 py-6">
+          <ul class="space-y-2">
+            <li>
+              <a href="index.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m0 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-sidebar-accent text-sidebar-accent-foreground">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span>Reports</span>
+              </a>
+            </li>
+            <li>
+              <a href="support.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span>Support</span>
+              </a>
+            </li>
+            <li>
+              <a href="growing-guide.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <span>Growing Guide</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="px-4 pb-6">
+          <div class="bg-sidebar-accent rounded-lg p-4">
+            <div class="flex items-center space-x-2 text-sidebar-accent-foreground">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              <div>
+                <div class="text-xs font-medium">Smart Irrigation</div>
+                <div class="text-xs opacity-75">AI Powered</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1 overflow-auto lg:ml-0">
+        <div class="lg:hidden h-16 w-full"></div>
+
+        <!-- Header Section -->
+        <header class="bg-white border-b border-gray-200 px-4 lg:px-6 py-4">
+          <div class="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+            <div>
+              <h1 class="text-2xl font-semibold" style="color:#356c48">Reports</h1>
+              <p class="text-sm" style="color:#688654">Garden monitoring analytics and insights</p>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600">Date range:</span>
+                <select id="date-range" class="text-sm border border-gray-300 rounded px-3 py-1" onchange="handleDateRangeChange()">
+                  <option value="today">Today</option>
+                  <option value="week" selected>This Week</option>
+                  <option value="30">Last 30 Days</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+              <div id="custom-range" class="hidden items-center space-x-2">
+                <input type="date" id="start-date" class="text-sm border border-gray-300 rounded px-2 py-1" onchange="applyCustomRange()"/>
+                <span class="text-gray-400">–</span>
+                <input type="date" id="end-date" class="text-sm border border-gray-300 rounded px-2 py-1" onchange="applyCustomRange()"/>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="p-4 lg:p-6 space-y-8">
+          <!-- System Overview Metrics -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h3 class="text-lg font-semibold" style="color:#356C48">System Overview</h3>
+                <p class="text-sm text-gray-600">High-level metrics for your garden</p>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full lg:w-auto">
+                <div class="p-4 bg-gray-50 rounded-lg text-center">
+                  <div class="text-xs text-gray-600">Total Beds</div>
+                  <div id="total-beds-overview" class="text-2xl font-bold" style="color:#356C48">-</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg text-center">
+                  <div class="text-xs text-gray-600">Healthy</div>
+                  <div id="total-healthy-overview" class="text-2xl font-bold" style="color:#688654">-</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg text-center">
+                  <div class="text-xs text-gray-600">Attention</div>
+                  <div id="total-attention-overview" class="text-2xl font-bold" style="color:#D57A66">-</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg text-center">
+                  <div class="text-xs text-gray-600">Urgent</div>
+                  <div id="total-urgent-overview" class="text-2xl font-bold" style="color:#D169D4">-</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="p-4 bg-gray-50 rounded-lg text-center">
+                <div class="text-xs text-gray-600">Total Water Used</div>
+                <div id="metric-water-used" class="text-xl font-bold" style="color:#356C48">-</div>
+                <div class="text-xs text-gray-500">for selected range</div>
+              </div>
+              <div class="p-4 bg-gray-50 rounded-lg text-center">
+                <div class="text-xs text-gray-600">Avg Soil Moisture</div>
+                <div id="metric-soil-moisture" class="text-xl font-bold" style="color:#356C48">-</div>
+              </div>
+              <div class="p-4 bg-gray-50 rounded-lg text-center">
+                <div class="text-xs text-gray-600">Avg Soil Temp</div>
+                <div id="metric-soil-temp" class="text-xl font-bold" style="color:#D57A66">-</div>
+              </div>
+              <div class="p-4 bg-gray-50 rounded-lg text-center">
+                <div class="text-xs text-gray-600">Avg Air Temp / Humidity</div>
+                <div id="metric-air-temp-hum" class="text-xl font-bold" style="color:#356C48">-</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top 3 Thirstiest + Moisture comparison toggle -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-sm p-6 lg:col-span-1">
+              <h4 class="text-md font-semibold mb-3" style="color:#356C48">Top 3 Thirstiest Beds</h4>
+              <ol id="top3-thirsty" class="list-decimal pl-5 text-gray-700 space-y-2"></ol>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm p-6 lg:col-span-2">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h4 class="text-md font-semibold" style="color:#356C48">Moisture Comparison</h4>
+                  <p class="text-sm text-gray-600">Side-by-side or heatmap view</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button id="compare-mode-side" class="px-3 py-1 rounded bg-gray-100 text-sm" onclick="setMoistureView('side')">Side-by-side</button>
+                  <button id="compare-mode-heat" class="px-3 py-1 rounded text-sm" onclick="setMoistureView('heat')">Heatmap</button>
+                </div>
+              </div>
+
+              <div id="moisture-compare-container">
+                <div id="moisture-side-by-side" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="p-3 bg-gray-50 rounded">
+                    <div class="text-sm text-gray-600 mb-2">Moisture (Average) - Left</div>
+                    <div class="chart-container-small" style="height:150px"><canvas id="moisture-compare-left"></canvas></div>
+                  </div>
+                  <div class="p-3 bg-gray-50 rounded">
+                    <div class="text-sm text-gray-600 mb-2">Moisture (Average) - Right</div>
+                    <div class="chart-container-small" style="height:150px"><canvas id="moisture-compare-right"></canvas></div>
+                  </div>
+                </div>
+
+                <div id="moisture-heatmap" class="hidden p-3 bg-gray-50 rounded">
+                  <div class="text-sm text-gray-600 mb-2">Heatmap (beds vs time)</div>
+                  <div id="heatmap-grid" class="overflow-auto text-xs"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trend visualizations -->
+          <div class="space-y-6">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+              <h4 class="text-lg font-semibold mb-2" style="color:#356C48">Moisture & Temperature Trends</h4>
+              <p class="text-sm text-gray-600 mb-4">Soil and ambient trends over time</p>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="p-3 bg-gray-50 rounded">
+                  <div class="chart-container"><canvas id="trend-moisture-chart"></canvas></div>
+                </div>
+                <div class="p-3 bg-gray-50 rounded">
+                  <div class="chart-container"><canvas id="trend-temp-chart"></canvas></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm p-6">
+              <h4 class="text-lg font-semibold mb-2" style="color:#356C48">Water Usage Trends vs Targets</h4>
+              <p class="text-sm text-gray-600 mb-4">Daily/weekly/monthly consumption compared to smart targets</p>
+              <div class="chart-container"><canvas id="water-usage-trend-chart"></canvas></div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm p-6">
+              <h4 class="text-lg font-semibold mb-2" style="color:#356C48">Bed Health Trends</h4>
+              <p class="text-sm text-gray-600 mb-4">Healthy / Attention / Urgent over time</p>
+              <div class="chart-container"><canvas id="bed-health-trend-chart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Comparisons & Top metrics already above -->
+
+          <!-- Alerts & Events Summary -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-sm p-6 lg:col-span-2">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-semibold" style="color:#356C48">Alerts & Events</h4>
+                <div class="flex items-center space-x-2">
+                  <select id="alert-type-filter" class="text-sm border border-gray-300 rounded px-3 py-1" onchange="renderAlerts()">
+                    <option value="all">All Types</option>
+                    <option value="Too Hot">Too Hot</option>
+                    <option value="Too Cold">Too Cold</option>
+                    <option value="Needs Water">Needs Water</option>
+                  </select>
+                  <select id="alert-bed-filter" class="text-sm border border-gray-300 rounded px-3 py-1" onchange="renderAlerts()">
+                    <option value="all">All Beds</option>
+                  </select>
+                </div>
+              </div>
+              <div class="overflow-auto">
+                <table class="w-full text-sm">
+                  <thead><tr class="text-left text-gray-600 border-b"><th class="py-2">Date</th><th class="py-2">Type</th><th class="py-2">Bed</th><th class="py-2">Notes</th></tr></thead>
+                  <tbody id="alerts-table"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm p-6">
+              <h4 class="text-md font-semibold mb-4" style="color:#356C48">Manual vs Automated Watering</h4>
+              <div class="chart-container-sm"><canvas id="manual-automated-chart"></canvas></div>
+              <div class="mt-4 text-sm text-gray-600">
+                <div>Automatic: <span id="pct-auto" class="font-semibold">-</span></div>
+                <div>Manual: <span id="pct-manual" class="font-semibold">-</span></div>
+                <div class="mt-2">Estimated weekly savings: <span id="weekly-savings" class="font-semibold">-</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Water usage by bed and export area -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="text-lg font-semibold" style="color:#356C48">Water Usage by Bed</h4>
+              <div class="flex items-center space-x-2">
+                <button class="px-3 py-1 rounded bg-gray-100 text-sm" onclick="updateAll()">Refresh</button>
+                <button class="px-3 py-1 rounded bg-emerald-100 text-sm" onclick="exportCSV()">Export CSV</button>
+              </div>
+            </div>
+            <div class="chart-container-sm"><canvas id="usage-by-bed-chart-extended"></canvas></div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-3 bg-gray-50 rounded">
+                <div class="text-sm text-gray-600">Top Thirstiest (This Range)</div>
+                <ol id="top-thirsty-list" class="list-decimal pl-5 text-gray-700 mt-2"></ol>
+              </div>
+              <div class="p-3 bg-gray-50 rounded">
+                <div class="text-sm text-gray-600">Side-by-side compare</div>
+                <div id="compare-placeholder" class="text-xs text-gray-500">Use Moisture Comparison above</div>
+              </div>
+              <div class="p-3 bg-gray-50 rounded">
+                <div class="text-sm text-gray-600">Notes</div>
+                <div class="text-xs text-gray-500 mt-2">Water targets based on plant requirements.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="reports.js"></script>
+  </body>
+</html>

@@ -2,333 +2,368 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="placeholder.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HarvestPro - Garden Management Dashboard</title>
+    <title>HarvestPro WaterSense Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: {
+              sans: ["Montserrat", "ui-sans-serif", "system-ui"],
+            },
             colors: {
-              "primary-teal": "rgb(0, 128, 128)",
-              "dashboard-text-primary": "rgb(17, 24, 39)",
-              "dashboard-text-secondary": "rgb(71, 85, 105)",
-              "dashboard-text-muted": "rgb(148, 163, 184)",
-              "dashboard-border-light": "rgb(229, 231, 235)",
-              "dashboard-status-green": "rgb(22, 163, 74)",
-              "dashboard-status-amber": "rgb(245, 158, 11)",
-              "dashboard-status-red": "rgb(239, 68, 68)",
-              "dashboard-overlay": "rgba(241, 245, 249, 0.5)",
-            },
-            fontSize: {
-              "heading-large": [
-                "30px",
-                { lineHeight: "36px", fontWeight: "700" },
-              ],
-              "heading-medium": [
-                "24px",
-                { lineHeight: "32px", fontWeight: "700" },
-              ],
-              "heading-small": [
-                "18px",
-                { lineHeight: "28px", fontWeight: "700" },
-              ],
-              "body-large": ["18px", { lineHeight: "28px" }],
-              "body-small": ["14px", { lineHeight: "20px" }],
-              "body-tiny": ["12px", { lineHeight: "16px", fontWeight: "500" }],
-            },
-            spacing: {
-              "section-bottom": "48px",
-              "heading-bottom": "32px",
-              "card-spacing": "24px",
+              primary: {
+                DEFAULT: "#356C48", // Forest Green
+                foreground: "#F5F3EF", // Cream Sand
+              },
+              secondary: {
+                DEFAULT: "#688654", // Olive Leaf
+                foreground: "#431229", // Charcoal Soil
+              },
+              sidebar: {
+                DEFAULT: "#356C48", // Forest Green
+                foreground: "#F5F3EF", // Cream Sand
+                accent: "#688654", // Olive Leaf
+                "accent-foreground": "#F5F3EF", // Cream Sand
+              },
+              terracotta: "#D57A66", // Terracotta Clay
+              sage: "#A789A2", // Cool Sage
+              alert: "#D169D4", // Alert Red
+              sky: "#BFD7EA", // Sky Blue Tint
+              cream: "#F5F3EF", // Cream Sand
+              charcoal: "#431229", // Charcoal Soil
+              healthy: "#688654", // Olive Leaf
+              warning: "#D57A66", // Terracotta Clay
+              danger: "#D169D4", // Alert Red
             },
           },
         },
       };
     </script>
     <style>
-      /* Custom scrollbar styling */
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
+      .chart-container {
+        position: relative;
+        height: 60px;
+        width: 100%;
       }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: rgba(241, 245, 249, 0.5);
-        border-radius: 3px;
+
+      /* Toggle Switch Styles */
+      .toggle-switch {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 40px;
+        height: 24px;
+        border-radius: 12px;
+        background-color: #d1d5db;
+        cursor: pointer;
+        position: relative;
+        outline: none;
+        border: none;
+        transition: background-color 0.3s ease;
       }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(148, 163, 184, 0.5);
-        border-radius: 3px;
+
+      .toggle-switch:checked {
+        background-color: #356C48;
       }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: rgba(148, 163, 184, 0.8);
+
+      .toggle-switch:before {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: white;
+        top: 2px;
+        left: 2px;
+        transition: left 0.3s ease;
+      }
+
+      .toggle-switch:checked:before {
+        left: 18px;
+      }
+
+      .toggle-switch:focus {
+        box-shadow: 0 0 0 2px rgba(53, 108, 72, 0.2);
+      }
+
+      /* Design System - Typography */
+      h1, .heading-1 { font-size: 1.875rem; font-weight: 600; color: #356C48; line-height: 1.2; }
+      h2, .heading-2 { font-size: 1.5rem; font-weight: 600; color: #356C48; line-height: 1.3; }
+      h3, .heading-3 { font-size: 1.25rem; font-weight: 600; color: #356C48; line-height: 1.4; }
+      h4, .heading-4 { font-size: 1.125rem; font-weight: 600; color: #356C48; line-height: 1.4; }
+      .text-label { font-size: 0.875rem; font-weight: 500; color: #688654; }
+      .text-caption { font-size: 0.75rem; font-weight: 400; color: #688654; }
+      .text-body { font-size: 1rem; font-weight: 400; color: #33312E; line-height: 1.5; }
+
+      /* Design System - Buttons */
+      .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 0.5rem; font-weight: 500; transition: all 0.2s ease; border: none; cursor: pointer; text-decoration: none; }
+      .btn-primary { background-color: #356C48; color: #F5F3EF; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-primary:hover { background-color: #2D5839; }
+      .btn-primary:active { background-color: #254830; }
+      .btn-primary:disabled { background-color: #9CA3AF; color: #E5E7EB; cursor: not-allowed; }
+
+      .btn-secondary { background-color: #F5F3EF; color: #356C48; border: 1px solid #E5E7EB; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-secondary:hover { background-color: #F3F4F6; }
+      .btn-secondary:active { background-color: #E5E7EB; }
+      .btn-secondary:disabled { background-color: #F9FAFB; color: #9CA3AF; cursor: not-allowed; border-color: #E5E7EB; }
+
+      .btn-secondary-gray { background-color: #F3F4F6; color: #688654; border: 1px solid #E5E7EB; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-secondary-gray:hover { background-color: #E5E7EB; }
+      .btn-secondary-gray:active { background-color: #D1D5DB; }
+      .btn-secondary-gray:disabled { background-color: #F9FAFB; color: #9CA3AF; cursor: not-allowed; }
+
+      .btn-danger { background-color: #DC2626; color: #FFFFFF; padding: 0.625rem 1rem; font-size: 0.875rem; }
+      .btn-danger:hover { background-color: #B91C1C; }
+      .btn-danger:active { background-color: #991B1B; }
+      .btn-danger:disabled { background-color: #9CA3AF; color: #E5E7EB; cursor: not-allowed; }
+
+      /* Status Badge */
+      .status-badge { display: inline-block; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; text-align: center; white-space: nowrap; }
+      .status-badge-healthy { background-color: #3A6A49; color: #FFFFFF; }
+      .status-badge-warning { background-color: #D57A66; color: #FFFFFF; }
+      .status-badge-alert { background-color: #DC2626; color: #FFFFFF; }
+
+      /* Collapsible Sidebar */
+      #sidebar {
+        transition: width 0.3s ease-in-out;
+      }
+
+      #sidebar.collapsed {
+        width: 80px;
+      }
+
+      #sidebar.collapsed .sidebar-text {
+        display: none;
+      }
+
+      #sidebar.collapsed .logo-text {
+        display: none;
+      }
+
+      #sidebar.collapsed nav ul li {
+        justify-content: center;
+      }
+
+      #sidebar.collapsed nav ul li a {
+        padding: 0.5rem 0.75rem;
+      }
+
+      #sidebar.collapsed nav ul li a span {
+        display: none;
+      }
+
+      #sidebar.collapsed .bottom-feature {
+        display: none;
+      }
+
+      #sidebar.collapsed .logo-section {
+        justify-content: center;
       }
     </style>
   </head>
-  <body class="bg-white font-sans">
-    <!-- Main Layout Container -->
-    <div class="flex min-h-screen bg-white">
-      <!-- Sidebar Navigation -->
-      <aside
-        id="sidebar"
-        class="fixed inset-y-0 left-0 z-50 w-64 bg-primary-teal border-r border-primary-teal transform transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full"
+  <body class="bg-gray-50">
+    <div class="flex h-screen">
+      <!-- Mobile menu button -->
+      <button
+        id="mobile-menu-btn"
+        class="lg:hidden fixed top-4 left-4 z-50 bg-sidebar text-sidebar-foreground p-2 rounded-lg shadow-lg"
       >
-        <!-- Sidebar Header -->
-        <div
-          class="flex items-center h-20 px-4 border-b border-primary-teal/20"
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div
-            class="flex items-center justify-center w-12 h-12 bg-gray-50 rounded-full flex-shrink-0"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+      </button>
+
+      <!-- Mobile overlay -->
+      <div
+        id="mobile-overlay"
+        class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden"
+      ></div>
+
+      <!-- Sidebar -->
+      <div
+        id="sidebar"
+        class="flex h-screen w-64 flex-col bg-sidebar transition-transform duration-300 ease-in-out z-40 lg:translate-x-0 fixed lg:relative -translate-x-full"
+      >
+        <!-- Logo & Collapse Button -->
+        <div class="flex items-center justify-between px-6 py-4 logo-section">
+          <div class="flex items-center space-x-3 logo-text">
+            <!-- Small icon -->
+            <div class="bg-white bg-opacity-10 rounded-lg p-2">
+              <svg
+                class="w-5 h-5"
+                style="color: #f5f3ef"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2C8.5 2 5.5 4.5 4.5 8c-0.5 1.5-0.5 3 0 4.5C5.5 15.5 8.5 18 12 18c1 0 2-0.2 2.9-0.6C16.8 16.8 18 15 18 13c0-2.2-1.8-4-4-4c-1.1 0-2.1 0.4-2.8 1.2C10.4 11 9.5 12 9.5 13.2c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5c0-0.3 0.2-0.5 0.5-0.5s0.5 0.2 0.5 0.5c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5c0-2.2 1.8-4 4-4 3.3 0 6 2.7 6 6 0 3.3-2.7 6-6 6-4.4 0-8-3.6-8-8 0-4.4 3.6-8 8-8z"
+                />
+              </svg>
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center">
+                <span
+                  class="text-lg font-light"
+                  style="color: #f5f3ef; letter-spacing: 1px"
+                  >harvest</span
+                >
+                <span
+                  class="text-lg font-bold"
+                  style="color: #f5f3ef; letter-spacing: 1px"
+                  >PRO</span
+                >
+              </div>
+              <div
+                class="text-sm font-normal"
+                style="color: #f5f3ef; margin-top: -2px; opacity: 0.9"
+              >
+                WaterSense
+              </div>
+            </div>
+          </div>
+          <!-- Collapse Button -->
+          <button
+            id="sidebar-collapse-btn"
+            class="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/30 transition-colors"
+            onclick="toggleSidebar()"
           >
-            <!-- HarvestPro Logo SVG -->
             <svg
-              width="40"
-              height="40"
-              viewBox="0 0 40 40"
+              class="w-5 h-5"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-10 h-10"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              id="collapse-icon"
             >
-              <!-- Background circle -->
-              <circle
-                cx="20"
-                cy="20"
-                r="18"
-                fill="#10B981"
-                stroke="#059669"
-                stroke-width="2"
-              />
-
-              <!-- Plant stem and leaves -->
               <path
-                d="M20 32V16M20 16C18 14 15 13 12 14C15 11 18 12 20 16ZM20 16C22 14 25 13 28 14C25 11 22 12 20 16Z"
-                stroke="white"
-                stroke-width="2.5"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                fill="none"
-              />
-
-              <!-- Leaves -->
-              <path
-                d="M16 20C14 18 12 17 10 18C12 16 14 17 16 20"
-                stroke="white"
                 stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                fill="none"
-              />
-              <path
-                d="M24 20C26 18 28 17 30 18C28 16 26 17 24 20"
-                stroke="white"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                fill="none"
-              />
-
-              <!-- Soil/Ground -->
-              <ellipse
-                cx="20"
-                cy="32"
-                rx="8"
-                ry="2"
-                fill="white"
-                opacity="0.8"
-              />
-
-              <!-- Small accent dots -->
-              <circle cx="20" cy="12" r="1.5" fill="white" />
-              <circle cx="16" cy="14" r="1" fill="white" opacity="0.7" />
-              <circle cx="24" cy="14" r="1" fill="white" opacity="0.7" />
+                d="M15 19l-7-7 7-7"
+              ></path>
             </svg>
-          </div>
-          <div class="ml-3 flex-1">
-            <h1
-              class="text-lg font-bold text-gray-50 truncate whitespace-nowrap"
-            >
-              HarvestPro
-            </h1>
-            <p class="text-sm text-gray-50/70">Smart Garden Management</p>
-          </div>
+          </button>
         </div>
 
-        <!-- Sidebar Content -->
-        <div class="flex flex-col flex-1 justify-between h-full">
-          <!-- Navigation Menu -->
-          <nav class="px-4 py-6">
-            <ul class="space-y-2">
-              <!-- Dashboard - Active -->
-              <li>
-                <button
-                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 bg-black/10 rounded-lg transition-colors duration-150"
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6">
+          <ul class="space-y-2 flex flex-col items-stretch">
+            <li class="flex">
+              <a
+                href="#"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-sidebar-accent text-sidebar-accent-foreground flex-1"
+                title="Dashboard"
+              >
+                <svg
+                  class="w-5 h-5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
-                    ></path>
-                  </svg>
-                  <span class="truncate whitespace-nowrap">Dashboard</span>
-                </button>
-              </li>
-
-              <!-- Plant -->
-              <li>
-                <a
-                  href="plant-details.html"
-                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 hover:bg-black/10 rounded-lg transition-colors duration-150"
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m0 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  ></path>
+                </svg>
+                <span class="sidebar-text">Dashboard</span>
+              </a>
+            </li>
+            <li class="flex">
+              <a
+                href="reports.html"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground flex-1"
+                title="Reports"
+              >
+                <svg
+                  class="w-5 h-5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M7 20h10M10 20c5.5-2.5.8-6.4 3-10M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8zM14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"
-                    ></path>
-                  </svg>
-                  <span class="truncate whitespace-nowrap">Plant</span>
-                </a>
-              </li>
-
-              <!-- Bed -->
-              <li>
-                <a
-                  href="bed-details.html"
-                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 hover:bg-black/10 rounded-lg transition-colors duration-150"
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  ></path>
+                </svg>
+                <span class="sidebar-text">Reports</span>
+              </a>
+            </li>
+            <li class="flex">
+              <a
+                href="support.html"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground flex-1"
+                title="Support"
+              >
+                <svg
+                  class="w-5 h-5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <rect
-                      width="18"
-                      height="18"
-                      x="3"
-                      y="3"
-                      rx="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    ></rect>
-                    <path
-                      d="M3 9h18"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    ></path>
-                    <path
-                      d="M9 21V9"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    ></path>
-                  </svg>
-                  <span class="truncate whitespace-nowrap">Bed</span>
-                </a>
-              </li>
-
-              <!-- Notification - Disabled -->
-              <li>
-                <button
-                  disabled
-                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                  ></path>
+                </svg>
+                <span class="sidebar-text">Support</span>
+              </a>
+            </li>
+            <li class="flex">
+              <a
+                href="growing-guide.html"
+                class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground flex-1"
+                title="Growing Guide"
+              >
+                <svg
+                  class="w-5 h-5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"
-                    ></path>
-                  </svg>
-                  <span class="truncate whitespace-nowrap">Notification</span>
-                </button>
-              </li>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  ></path>
+                </svg>
+                <span class="sidebar-text">Growing Guide</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
 
-              <!-- Report - Disabled -->
-              <li>
-                <button
-                  disabled
-                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
-                >
-                  <svg
-                    class="w-5 h-5 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
-                    ></path>
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8"
-                    ></path>
-                  </svg>
-                  <span class="truncate whitespace-nowrap">Report</span>
-                </button>
-              </li>
-
-              <!-- Support - Disabled -->
-              <li>
-                <button
-                  disabled
-                  class="w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
-                >
-                  <svg
-                    class="w-5 h-5 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path
-                      d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    ></path>
-                    <path d="M12 17h.01"></path>
-                  </svg>
-                  <span class="truncate whitespace-nowrap">Supports</span>
-                </button>
-              </li>
-            </ul>
-          </nav>
-
-          <!-- Settings Section -->
-          <div class="px-4 py-2 border-t border-primary-teal/20">
-            <button
-              disabled
-              class="w-full flex items-center gap-3 px-3 py-2 h-10 text-sm font-medium text-gray-50 opacity-50 cursor-not-allowed rounded-lg transition-colors duration-150"
+        <!-- Smart Irrigation Feature -->
+        <div class="px-4 pb-6 bottom-feature">
+          <div class="bg-sidebar-accent rounded-lg p-4">
+            <div
+              class="flex items-center space-x-2 text-sidebar-accent-foreground"
             >
               <svg
-                class="w-5 h-5 shrink-0"
+                class="w-4 h-4 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -337,45 +372,214 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
                 ></path>
-                <circle cx="12" cy="12" r="3"></circle>
               </svg>
-              <span class="truncate whitespace-nowrap">Settings</span>
-            </button>
+              <div>
+                <div class="text-xs font-medium">Smart Irrigation</div>
+                <div class="text-xs opacity-75">AI Powered</div>
+              </div>
+            </div>
           </div>
         </div>
-      </aside>
+      </div>
 
-      <!-- Main Content Area -->
-      <div class="flex-1 lg:ml-64">
+      <!-- Main Content -->
+      <div class="flex-1 overflow-auto lg:ml-0">
+        <!-- Mobile spacing for menu button -->
+        <div class="lg:hidden h-16 w-full"></div>
+
         <!-- Header -->
-        <header
-          class="bg-white/80 backdrop-blur-md border-b border-dashboard-border-light h-16 fixed top-0 right-0 left-0 lg:left-64 z-40"
-        >
-          <div class="flex items-center justify-between h-full px-6">
-            <!-- Mobile Menu Button -->
-            <button
-              id="mobile-menu-btn"
-              class="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
+        <header class="bg-white border-b border-gray-200 px-4 lg:px-6 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-xl font-semibold" style="color: #356c48">
+                Welcome back, Sarah!
+              </h1>
+              <p class="text-sm" style="color: #688654">
+                Last updated: 3 mins ago
+              </p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <div class="relative hidden sm:block">
+                <svg
+                  class="w-6 h-6 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-5 5-5-5h5z"
+                  ></path>
+                </svg>
+                <span
+                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center"
+                  >1</span
+                >
+              </div>
+              <div
+                class="w-8 h-8 bg-terracotta rounded-full flex items-center justify-center"
+              >
+                <span class="text-white text-sm font-medium">S</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="p-4 lg:p-6">
+          <!-- Summary Cards -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8"
+            id="summary-cards"
+          >
+            <!-- Summary cards will be generated by JavaScript -->
+          </div>
+
+          <!-- Smart Watering Tips -->
+          <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div class="flex items-center space-x-2 mb-4">
               <svg
-                id="hamburger-icon"
-                class="w-6 h-6 text-dashboard-text-primary"
-                fill="none"
-                stroke="currentColor"
+                class="w-5 h-5"
+                style="color: #bfd7ea"
+                fill="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
+                  d="M12 2c-4.97 0-9 4.03-9 9 0 4.17 2.84 7.67 6.69 8.69L12 22l2.31-2.31C18.16 18.67 21 15.17 21 11c0-4.97-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"
                 ></path>
               </svg>
+              <h3 class="font-semibold" style="color: #356c48">
+                Smart Watering Tips
+              </h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="flex items-start space-x-3">
+                <div
+                  class="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                  style="background-color: #bfd7ea"
+                ></div>
+                <div class="text-sm" style="color: #688654">
+                  Monitor both soil and air metrics in plant details to optimize growing conditions.
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div
+                  class="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                  style="background-color: #d57a66"
+                ></div>
+                <div class="text-sm" style="color: #688654">
+                  Log observations in the notes section to track plant health patterns over time.
+                </div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <div
+                  class="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                  style="background-color: #a789a2"
+                ></div>
+                <div class="text-sm" style="color: #688654">
+                  Use the sorting options to prioritize beds that need immediate attention.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- My Garden Section -->
+          <div class="rounded-lg shadow-sm" style="background-color: #f5f3ef">
+            <div class="px-6 py-4 border-b border-gray-200">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <svg
+                      class="w-5 h-5"
+                      style="color: #356c48"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M6 12c0-3.31 2.69-6 6-6s6 2.69 6 6c0 2.22-1.21 4.15-3 5.19V19c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2v-1.81C7.21 16.15 6 14.22 6 12z"
+                      />
+                      <path
+                        d="M9 4c0-1.66 1.34-3 3-3s3 1.34 3 3c0 .55-.45 1-1 1s-1-.45-1-1c0-.55-.45-1-1-1s-1 .45-1 1c0 .55-.45 1-1 1S9 4.55 9 4z"
+                      />
+                      <path
+                        d="M16 8c0-1.1.9-2 2-2s2 .9 2 2c0 .55-.45 1-1 1s-1-.45-1-1z"
+                      />
+                      <path
+                        d="M4 10c0-.55.45-1 1-1s1 .45 1 1c0 1.1-.9 2-2 2v-2z"
+                      />
+                    </svg>
+                    <h2 class="text-lg font-semibold" style="color: #356c48">
+                      My Garden
+                    </h2>
+                  </div>
+                  <p class="text-sm" style="color: #688654">Dashboard</p>
+                </div>
+                <div
+                  class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4"
+                >
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-600">Sort by:</span>
+                    <select
+                      class="text-sm border border-gray-300 rounded px-2 py-1"
+                      id="sort-dropdown"
+                      onchange="handleSortChange()"
+                    >
+                      <option>A-Z Alphabetical</option>
+                      <option>Newest - Oldest</option>
+                      <option>Oldest - Newest</option>
+                      <option>By Status</option>
+                    </select>
+                  </div>
+                  <button
+                    class="btn btn-primary"
+                    onclick="openAddBedModal()"
+                  >
+                    + Add Bed
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Garden Beds Grid -->
+            <div class="p-4 sm:p-6">
+              <div
+                class="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-6"
+                id="garden-beds-grid"
+              >
+                <!-- Garden beds will be generated by JavaScript -->
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Bed Modal -->
+    <div
+      id="add-bed-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto"
+      >
+        <div class="p-6">
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold" style="color: #356c48">
+              Add New Garden Bed
+            </h2>
+            <button
+              id="close-modal"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+            >
               <svg
-                id="close-icon"
-                class="w-6 h-6 text-dashboard-text-primary hidden"
+                class="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -388,703 +592,131 @@
                 ></path>
               </svg>
             </button>
-
-            <!-- Search Bar -->
-            <div class="flex-1 max-w-md mx-4">
-              <div class="relative">
-                <svg
-                  class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-dashboard-text-muted"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  ></path>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search plants, controllers..."
-                  class="w-full pl-10 pr-4 py-2 bg-dashboard-overlay border border-dashboard-border-light rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-teal focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-
-            <!-- User Actions -->
-            <div class="flex items-center gap-2">
-              <!-- Notification Button -->
-              <button
-                id="notification-btn"
-                class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <svg
-                  class="w-6 h-6 text-dashboard-text-primary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 17h5l-3.5-3.5c-.828-.828-2.172-.828-3 0L9 18h5zm0 0v1a3 3 0 01-6 0v-1m6 0H9"
-                  ></path>
-                </svg>
-                <span
-                  class="absolute top-1 right-1 w-2 h-2 bg-dashboard-status-red rounded-full"
-                ></span>
-              </button>
-
-              <!-- User Profile Button -->
-              <button
-                id="user-profile-btn"
-                class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <div
-                  class="w-8 h-8 bg-gradient-to-br from-primary-teal to-blue-500 rounded-full flex items-center justify-center"
-                >
-                  <span class="text-white text-sm font-medium">JD</span>
-                </div>
-              </button>
-            </div>
           </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="pt-16 min-h-screen bg-white custom-scrollbar">
-          <div class="p-6 max-w-5xl mx-auto">
-            <!-- Page Header -->
-            <div class="mb-heading-bottom">
-              <h1 class="text-heading-large text-dashboard-text-primary mb-2">
-                Dashboard
-              </h1>
-              <p class="text-body-large text-dashboard-text-secondary">
-                My Garden View
-              </p>
+          <!-- Modal Form -->
+          <form id="add-bed-form">
+            <!-- Bed Name -->
+            <div class="mb-4">
+              <label
+                for="bed-name"
+                class="block text-sm font-medium mb-2"
+                style="color: #356c48"
+                >Bed Name</label
+              >
+              <input
+                type="text"
+                id="bed-name"
+                name="bedName"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                style="focus:ring-color: #356C48;"
+                placeholder="Enter bed name (e.g., Herb Garden)"
+              />
             </div>
 
-            <!-- My Favourite Plant Section -->
-            <section class="mb-section-bottom">
-              <div class="flex items-center gap-3 mb-6">
-                <svg
-                  class="w-6 h-6 text-primary-teal"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 20h10M10 20c5.5-2.5.8-6.4 3-10M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8zM14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"
-                  ></path>
-                </svg>
-                <h2 class="text-heading-medium text-dashboard-text-primary">
-                  My Favourite Plant
-                </h2>
-              </div>
-
-              <div
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
+            <!-- Location -->
+            <div class="mb-4">
+              <label
+                for="bed-location"
+                class="block text-sm font-medium mb-2"
+                style="color: #356c48"
+                >Location</label
               >
-                <!-- Herb Bed Card -->
-                <div
-                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
-                >
-                  <div
-                    class="h-36 bg-gradient-to-r from-teal-50/20 to-emerald-100/20 relative"
-                  >
-                    <div
-                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
-                    >
-                      <span class="text-4xl">🌱</span>
-                    </div>
-                  </div>
-                  <div class="p-4">
-                    <div class="flex items-start justify-between mb-4">
-                      <h3
-                        class="text-heading-small text-dashboard-text-primary"
-                      >
-                        Herb Bed
-                      </h3>
-                      <div
-                        class="flex items-center gap-1.5 bg-dashboard-status-green text-white px-3 py-1 rounded-full flex-shrink-0"
-                      >
-                        <div
-                          class="w-2 h-2 bg-green-200 rounded-full flex-shrink-0"
-                        ></div>
-                        <span class="text-body-tiny whitespace-nowrap"
-                          >All Good</span
-                        >
-                      </div>
-                    </div>
-                    <div class="space-y-1">
-                      <p class="text-body-small text-dashboard-text-secondary">
-                        Garden Controller A
-                      </p>
-                      <p class="text-body-small text-dashboard-text-muted">
-                        Herb Garden
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              <input
+                type="text"
+                id="bed-location"
+                name="bedLocation"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                placeholder="Enter location (e.g., North Garden)"
+              />
+            </div>
 
-                <!-- Tomato Card -->
-                <div
-                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
-                >
-                  <div
-                    class="h-36 bg-gradient-to-r from-teal-50/20 to-emerald-100/20 relative"
-                  >
-                    <div
-                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
-                    >
-                      <span class="text-4xl">🌱</span>
-                    </div>
-                  </div>
-                  <div class="p-4">
-                    <div class="flex items-start justify-between mb-4">
-                      <h3
-                        class="text-heading-small text-dashboard-text-primary"
-                      >
-                        Tomato
-                      </h3>
-                      <div
-                        class="flex items-center gap-1.5 bg-dashboard-status-amber text-white px-3 py-1 rounded-full flex-shrink-0"
-                      >
-                        <div
-                          class="w-2 h-2 bg-amber-200 rounded-full flex-shrink-0"
-                        ></div>
-                        <span class="text-body-tiny whitespace-nowrap"
-                          >Check Bed</span
-                        >
-                      </div>
-                    </div>
-                    <div class="space-y-1">
-                      <p class="text-body-small text-dashboard-text-secondary">
-                        Greenhouse Controller
-                      </p>
-                      <p class="text-body-small text-dashboard-text-muted">
-                        Vegetable Garden
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Lettuce Patch Card -->
-                <div
-                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
-                >
-                  <div
-                    class="h-36 bg-gradient-to-r from-teal-50/20 to-emerald-100/20 relative"
-                  >
-                    <div
-                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
-                    >
-                      <span class="text-4xl">🌱</span>
-                    </div>
-                  </div>
-                  <div class="p-4">
-                    <div class="flex items-start justify-between mb-4">
-                      <h3
-                        class="text-heading-small text-dashboard-text-primary"
-                      >
-                        Lettuce Patch
-                      </h3>
-                      <div
-                        class="flex items-center gap-1.5 bg-dashboard-status-red text-white px-3 py-1 rounded-full flex-shrink-0"
-                      >
-                        <div
-                          class="w-2 h-2 bg-red-200 rounded-full flex-shrink-0"
-                        ></div>
-                        <span class="text-body-tiny whitespace-nowrap"
-                          >Urgent Issue</span
-                        >
-                      </div>
-                    </div>
-                    <div class="space-y-1">
-                      <p class="text-body-small text-dashboard-text-secondary">
-                        Main Garden Controller
-                      </p>
-                      <p class="text-body-small text-dashboard-text-muted">
-                        Flower Beds
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- My Favourite Controller Section -->
-            <section class="pb-6">
-              <div class="flex items-center gap-3 mb-6">
-                <svg
-                  class="w-6 h-6 text-primary-teal"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-                  ></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-                <h2 class="text-heading-medium text-dashboard-text-primary">
-                  My Favourite Controller
-                </h2>
-              </div>
-
-              <div
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-spacing"
+            <!-- Plant Variety -->
+            <div class="mb-4">
+              <label
+                for="bed-variety"
+                class="block text-sm font-medium mb-2"
+                style="color: #356c48"
+                >Plant Variety</label
               >
-                <!-- Garden Controller A Card -->
-                <div
-                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
-                >
-                  <div
-                    class="h-36 bg-gradient-to-r from-teal-50/20 to-teal-100/20 relative"
-                  >
-                    <div
-                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
-                    >
-                      <span class="text-4xl">🎮</span>
-                    </div>
-                    <div class="absolute top-3 right-3">
-                      <div
-                        class="w-10 h-8 rounded-full flex items-center justify-center"
-                      >
-                        <svg
-                          class="w-6 h-6 text-dashboard-text-primary"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 20h.01M2 8.82a15 15 0 0 1 20 0M5 12.859a10 10 0 0 1 14 0M8.5 16.429a5 5 0 0 1 7 0"
-                          ></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="p-4">
-                    <h3
-                      class="text-heading-small text-dashboard-text-primary mb-3"
-                    >
-                      Garden Controller A
-                    </h3>
-                    <div class="text-sm space-y-2">
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Address:</span
-                        >
-                        <span class="text-dashboard-text-secondary break-all"
-                          >Not set</span
-                        >
-                      </div>
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Location:</span
-                        >
-                        <span class="text-dashboard-text-secondary"
-                          >(x: y)</span
-                        >
-                      </div>
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Favorite Beds:</span
-                        >
-                        <span class="text-dashboard-text-secondary font-bold"
-                          >1</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <input
+                type="text"
+                id="bed-variety"
+                name="bedVariety"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                placeholder="Enter plant variety (e.g., Cherry Tomatoes, Basil, Lettuce)"
+              />
+            </div>
 
-                <!-- Greenhouse Controller Card -->
-                <div
-                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
-                >
-                  <div
-                    class="h-36 bg-gradient-to-r from-teal-50/20 to-teal-100/20 relative"
-                  >
-                    <div
-                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
-                    >
-                      <span class="text-4xl">🎮</span>
-                    </div>
-                    <div class="absolute top-3 right-3">
-                      <div
-                        class="w-10 h-8 rounded-full flex items-center justify-center"
-                      >
-                        <svg
-                          class="w-6 h-6 text-dashboard-text-primary"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 20h.01M2 8.82a15 15 0 0 1 20 0M5 12.859a10 10 0 0 1 14 0M8.5 16.429a5 5 0 0 1 7 0"
-                          ></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="p-4">
-                    <h3
-                      class="text-heading-small text-dashboard-text-primary mb-3"
-                    >
-                      Greenhouse Controller
-                    </h3>
-                    <div class="text-sm space-y-2">
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Address:</span
-                        >
-                        <span class="text-dashboard-text-secondary break-all"
-                          >Not set</span
-                        >
-                      </div>
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Location:</span
-                        >
-                        <span class="text-dashboard-text-secondary"
-                          >(x: y)</span
-                        >
-                      </div>
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Favorite Beds:</span
-                        >
-                        <span class="text-dashboard-text-secondary font-bold"
-                          >3</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <!-- Growing Substrate -->
+            <div class="mb-4">
+              <label
+                for="bed-substrate"
+                class="block text-sm font-medium mb-2"
+                style="color: #356c48"
+                >Growing Substrate</label
+              >
+              <select
+                id="bed-substrate"
+                name="bedSubstrate"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+              >
+                <option value="">Select growing substrate</option>
+                <option value="potting-soil">Potting Soil</option>
+                <option value="garden-soil">Garden Soil</option>
+                <option value="compost-mix">Compost Mix</option>
+                <option value="sphagnum-moss">Sphagnum Moss</option>
+                <option value="coco-coir">Coco Coir</option>
+                <option value="hydroponic">Hydroponic Medium</option>
+                <option value="perlite-mix">Perlite Mix</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
 
-                <!-- Hydroponic System Card -->
-                <div
-                  class="bg-white border border-dashboard-border-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer"
-                >
-                  <div
-                    class="h-36 bg-gradient-to-r from-teal-50/20 to-teal-100/20 relative"
-                  >
-                    <div
-                      class="absolute inset-0 bg-dashboard-overlay flex items-center justify-center"
-                    >
-                      <span class="text-4xl">🎮</span>
-                    </div>
-                    <div class="absolute top-3 right-3">
-                      <div
-                        class="w-10 h-8 bg-gray-100 rounded-full flex items-center justify-center"
-                      >
-                        <svg
-                          class="w-6 h-6 text-dashboard-text-secondary"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 20h.01M8.5 16.429a5 5 0 0 1 7 0M5 12.859a10 10 0 0 1 5.17-2.69M19 12.859a10 10 0 0 0-2.007-1.523M2 8.82a15 15 0 0 1 4.177-2.643M22 8.82a15 15 0 0 0-11.288-3.764m2 2 20 20"
-                          ></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="p-4">
-                    <h3
-                      class="text-heading-small text-dashboard-text-primary mb-3"
-                    >
-                      Hydroponic System
-                    </h3>
-                    <div class="text-sm space-y-2">
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Address:</span
-                        >
-                        <span class="text-dashboard-text-secondary break-all"
-                          >Not set</span
-                        >
-                      </div>
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Location:</span
-                        >
-                        <span class="text-dashboard-text-secondary"
-                          >(x: y)</span
-                        >
-                      </div>
-                      <div class="flex items-start gap-1">
-                        <span
-                          class="text-dashboard-text-secondary flex-shrink-0"
-                          >Favorite Beds:</span
-                        >
-                        <span class="text-dashboard-text-secondary font-bold"
-                          >2</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-        </main>
+            <!-- Number of Plants -->
+            <div class="mb-6">
+              <label
+                for="bed-plants"
+                class="block text-sm font-medium mb-2"
+                style="color: #356c48"
+                >Number of Plants</label
+              >
+              <input
+                type="number"
+                id="bed-plants"
+                name="bedPlants"
+                min="1"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                placeholder="Enter number of plants"
+              />
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="flex space-x-3">
+              <button
+                type="button"
+                id="cancel-btn"
+                class="flex-1 btn btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="flex-1 btn btn-primary"
+              >
+                Add Bed
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
-    <!-- Mobile Sidebar Overlay -->
-    <div
-      id="sidebar-overlay"
-      class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden"
-    ></div>
-
-    <script>
-      /**
-       * Garden Dashboard JavaScript
-       * Handles sidebar navigation, mobile menu, and dashboard interactions
-       */
-      class GardenDashboard {
-        constructor() {
-          this.sidebarOpen = false;
-          this.init();
-        }
-
-        init() {
-          this.setupEventListeners();
-          this.setupCardInteractions();
-        }
-
-        /**
-         * Set up all event listeners
-         */
-        setupEventListeners() {
-          // Mobile menu toggle
-          const mobileMenuBtn = document.getElementById("mobile-menu-btn");
-          mobileMenuBtn?.addEventListener("click", () => {
-            this.toggleSidebar();
-          });
-
-          // Sidebar overlay click
-          const sidebarOverlay = document.getElementById("sidebar-overlay");
-          sidebarOverlay?.addEventListener("click", () => {
-            this.closeSidebar();
-          });
-
-          // Notification button
-          const notificationBtn = document.getElementById("notification-btn");
-          notificationBtn?.addEventListener("click", () => {
-            this.showNotification(
-              "Garden Alert: Check your tomato plants",
-              "warning",
-            );
-          });
-
-          // User profile button
-          const userProfileBtn = document.getElementById("user-profile-btn");
-          userProfileBtn?.addEventListener("click", () => {
-            this.showNotification("Profile menu would open here", "info");
-          });
-
-          // Search functionality
-          const searchInput = document.querySelector(
-            'input[placeholder*="Search"]',
-          );
-          searchInput?.addEventListener("input", (e) => {
-            this.handleSearch(e.target.value);
-          });
-
-          // Escape key to close sidebar
-          document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && this.sidebarOpen) {
-              this.closeSidebar();
-            }
-          });
-
-          // Window resize handler
-          window.addEventListener("resize", () => {
-            if (window.innerWidth >= 1024 && this.sidebarOpen) {
-              this.closeSidebar();
-            }
-          });
-        }
-
-        /**
-         * Set up card interactions
-         */
-        setupCardInteractions() {
-          const cards = document.querySelectorAll(
-            ".cursor-pointer:not(button)",
-          );
-          cards.forEach((card) => {
-            card.addEventListener("click", () => {
-              const title =
-                card.querySelector("h3")?.textContent || "Garden Item";
-              this.showNotification(`Viewing details for ${title}`, "info");
-            });
-
-            card.addEventListener("mouseenter", () => {
-              card.style.transform = "translateY(-2px)";
-            });
-
-            card.addEventListener("mouseleave", () => {
-              card.style.transform = "translateY(0)";
-            });
-          });
-        }
-
-        /**
-         * Toggle sidebar visibility
-         */
-        toggleSidebar() {
-          if (this.sidebarOpen) {
-            this.closeSidebar();
-          } else {
-            this.openSidebar();
-          }
-        }
-
-        /**
-         * Open sidebar
-         */
-        openSidebar() {
-          const sidebar = document.getElementById("sidebar");
-          const overlay = document.getElementById("sidebar-overlay");
-          const hamburgerIcon = document.getElementById("hamburger-icon");
-          const closeIcon = document.getElementById("close-icon");
-
-          sidebar.classList.remove("-translate-x-full");
-          overlay.classList.remove("hidden");
-          hamburgerIcon.classList.add("hidden");
-          closeIcon.classList.remove("hidden");
-
-          this.sidebarOpen = true;
-        }
-
-        /**
-         * Close sidebar
-         */
-        closeSidebar() {
-          const sidebar = document.getElementById("sidebar");
-          const overlay = document.getElementById("sidebar-overlay");
-          const hamburgerIcon = document.getElementById("hamburger-icon");
-          const closeIcon = document.getElementById("close-icon");
-
-          sidebar.classList.add("-translate-x-full");
-          overlay.classList.add("hidden");
-          hamburgerIcon.classList.remove("hidden");
-          closeIcon.classList.add("hidden");
-
-          this.sidebarOpen = false;
-        }
-
-        /**
-         * Handle search functionality
-         */
-        handleSearch(query) {
-          if (query.length > 2) {
-            console.log("Searching for:", query);
-            this.showNotification(`Searching for "${query}"...`, "info");
-          }
-        }
-
-        /**
-         * Show notification
-         */
-        showNotification(message, type = "info") {
-          // Create notification container if it doesn't exist
-          let notificationContainer = document.getElementById(
-            "notification-container",
-          );
-          if (!notificationContainer) {
-            notificationContainer = document.createElement("div");
-            notificationContainer.id = "notification-container";
-            notificationContainer.className =
-              "fixed bottom-4 right-4 max-w-sm z-50 pointer-events-none";
-            document.body.appendChild(notificationContainer);
-          }
-
-          const notification = document.createElement("div");
-          const typeColors = {
-            success: "bg-dashboard-status-green text-white",
-            error: "bg-dashboard-status-red text-white",
-            warning: "bg-dashboard-status-amber text-white",
-            info: "bg-white border border-dashboard-border-light text-dashboard-text-primary shadow-lg",
-          };
-
-          notification.className = `
-            ${typeColors[type]}
-            p-4 rounded-lg mb-2 transform translate-x-full opacity-0
-            transition-all duration-300 ease-in-out pointer-events-auto
-          `;
-
-          notification.innerHTML = `
-            <div class="flex items-center justify-between">
-              <span class="text-sm font-medium">${message}</span>
-              <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-current opacity-70 hover:opacity-100">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-          `;
-
-          notificationContainer.appendChild(notification);
-
-          // Animate in
-          setTimeout(() => {
-            notification.classList.remove("translate-x-full", "opacity-0");
-          }, 100);
-
-          // Auto remove after 5 seconds
-          setTimeout(() => {
-            notification.classList.add("translate-x-full", "opacity-0");
-            setTimeout(() => {
-              notification.remove();
-            }, 300);
-          }, 5000);
-        }
-      }
-
-      // Initialize the dashboard when DOM is ready
-      document.addEventListener("DOMContentLoaded", () => {
-        new GardenDashboard();
-
-        // Show welcome notification
-        setTimeout(() => {
-          const dashboard = new GardenDashboard();
-          dashboard.showNotification(
-            "Welcome to HarvestPro Dashboard! 🌱",
-            "success",
-          );
-        }, 1000);
-      });
-    </script>
+    <script src="dashboard.js"></script>
   </body>
 </html>
